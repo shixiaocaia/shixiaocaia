@@ -22,6 +22,5 @@
   - 闲话长说
   - 学习记录
 - C++ 在学
-- Deep_learning 入门
-
+- [Deep_learning 入门](https://github.com/shixiaocaia/deep-learning)
 
