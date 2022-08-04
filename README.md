@@ -18,9 +18,9 @@
 </div>
 
 ### 📝 22年痕迹
-- [Blog 更新](https://blog-shixiaocaia.vercel.app/)
-  - 闲话长说
-  - 学习记录
-- C++ 在学
-- [Deep_learning 入门](https://github.com/shixiaocaia/deep-learning)
+- [每周周记](https://shixiaocaia.fun)
+- [C++ 在学](https://shixiaocaia.fun/wiki/01_C/)
+- [leetcode进行时](https://shixiaocaia.fun/wiki/02_Leetcode/)
+- 四套件在学
+- [Deep_learning 入门](https://shixiaocaia.fun/wiki/00_deep_learning/)
 
