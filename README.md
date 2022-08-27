@@ -13,7 +13,6 @@
 
 ![snake](./assets/github-contribution-grid-snake.svg)
 
-![](https://activity-graph.herokuapp.com/graph?username=shixiaocaia&theme=github)
 
 </div>
 
