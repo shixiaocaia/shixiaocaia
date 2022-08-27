@@ -18,4 +18,10 @@
 </div>
 
 ### 📝 22年痕迹
-<!-- BLOG-POST-LIST:START --><!-- BLOG-POST-LIST:END -->
+<!-- BLOG-POST-LIST:START -->
+- [Hexo-博客装修](https://shixiaocaia.fun/posts/57513/)
+- [Weekly |看见与看不见](https://shixiaocaia.fun/posts/36836/)
+- [Leetcode |哈希表](https://shixiaocaia.fun/posts/24289/)
+- [Weekly |与六年笔友两小时“组会”](https://shixiaocaia.fun/posts/37572/)
+- [Leetcode |链表](https://shixiaocaia.fun/posts/30258/)
+<!-- BLOG-POST-LIST:END -->
