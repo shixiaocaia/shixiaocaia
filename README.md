@@ -18,9 +18,9 @@
 
 ### 📝 最近在说些什么
 <!-- BLOG-POST-LIST:START -->
-- [Weekly |最长的gap](https://outatsea.icu/posts/5108/)
-- [Weekly |成年后](https://outatsea.icu/posts/9764/)
-- [Hexo-博客装修](https://outatsea.icu/posts/57513/)
-- [Weekly |看见与看不见](https://outatsea.icu/posts/36836/)
-- [Leetcode |哈希表](https://outatsea.icu/posts/24289/)
+- [Weekly |最长的gap](https://shixiaocaia.fun/posts/5108/)
+- [Weekly |成年后](https://shixiaocaia.fun/posts/9764/)
+- [Hexo-博客装修](https://shixiaocaia.fun/posts/57513/)
+- [Weekly |看见与看不见](https://shixiaocaia.fun/posts/36836/)
+- [Leetcode |哈希表](https://shixiaocaia.fun/posts/24289/)
 <!-- BLOG-POST-LIST:END -->
