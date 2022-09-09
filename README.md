@@ -18,9 +18,9 @@
 
 ### 📝 最近在说些什么
 <!-- BLOG-POST-LIST:START -->
+- [Weekly |Hello SHU](https://shixiaocaia.fun/posts/39394/)
 - [Weekly |最长的gap](https://shixiaocaia.fun/posts/5108/)
 - [Weekly |成年后](https://shixiaocaia.fun/posts/9764/)
 - [Hexo-博客装修](https://shixiaocaia.fun/posts/57513/)
 - [Weekly |看见与看不见](https://shixiaocaia.fun/posts/36836/)
-- [Leetcode |哈希表](https://shixiaocaia.fun/posts/24289/)
 <!-- BLOG-POST-LIST:END -->
