@@ -15,9 +15,9 @@
 
 ### 📝 最近在说些什么
 <!-- BLOG-POST-LIST:START -->
+- [KMP算法&amp;日常](https://shixiaocaia.fun/posts/39226/)
 - [Weekly |Hello SHU](https://shixiaocaia.fun/posts/39394/)
 - [Weekly |最长的gap](https://shixiaocaia.fun/posts/5108/)
 - [Weekly |成年后](https://shixiaocaia.fun/posts/9764/)
 - [Hexo-博客装修](https://shixiaocaia.fun/posts/57513/)
-- [Weekly |看见与看不见](https://shixiaocaia.fun/posts/36836/)
 <!-- BLOG-POST-LIST:END -->
