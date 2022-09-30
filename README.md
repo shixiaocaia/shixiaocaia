@@ -15,9 +15,9 @@
 
 ### 📝 最近在说些什么
 <!-- BLOG-POST-LIST:START -->
+- [Weekly |国庆假期前的叨叨](https://shixiaocaia.fun/posts/52909/)
 - [Hexo简化 + Docsify搭建](https://shixiaocaia.fun/posts/44623/)
 - [Weekly |情绪管理](https://shixiaocaia.fun/posts/5237/)
 - [Hexo-博客搭建](https://shixiaocaia.fun/posts/26102/)
 - [Weekly |大城市](https://shixiaocaia.fun/posts/17007/)
-- [KMP算法&amp;日常](https://shixiaocaia.fun/posts/39226/)
 <!-- BLOG-POST-LIST:END -->
