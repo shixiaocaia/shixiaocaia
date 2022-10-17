@@ -15,9 +15,9 @@
 
 ### 📝 最近在说些什么
 <!-- BLOG-POST-LIST:START -->
+- [Weekly |世界带给我的疑惑比答案多](https://shixiaocaia.fun/posts/5281/)
 - [与内容农场抗争](https://shixiaocaia.fun/posts/8751/)
 - [Weekly |国庆假期前的叨叨](https://shixiaocaia.fun/posts/52909/)
 - [Hexo简化 + Docsify搭建](https://shixiaocaia.fun/posts/44623/)
 - [Weekly |情绪管理](https://shixiaocaia.fun/posts/5237/)
-- [Hexo-博客搭建](https://shixiaocaia.fun/posts/26102/)
 <!-- BLOG-POST-LIST:END -->
