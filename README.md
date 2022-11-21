@@ -15,9 +15,9 @@
 
 ### 📝 最近在说些什么
 <!-- BLOG-POST-LIST:START -->
+- [Hexo-AirCloud主题装修指南](http://shixiaocaia.fun/posts/53903/)
+- [Weekly |好好生活](http://shixiaocaia.fun/posts/36833/)
 - [Weekly |美式就好](http://shixiaocaia.fun/posts/47435/)
 - [Weekly |换个主题，换个心情](http://shixiaocaia.fun/posts/24738/)
 - [Weekly |封校的20天](http://shixiaocaia.fun/posts/22656/)
-- [Weekly |世界带给我的疑惑比答案多](http://shixiaocaia.fun/posts/5281/)
-- [与内容农场抗争](http://shixiaocaia.fun/posts/8751/)
 <!-- BLOG-POST-LIST:END -->
