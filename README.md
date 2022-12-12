@@ -15,9 +15,9 @@
 
 ### 📝 最近在说些什么
 <!-- BLOG-POST-LIST:START -->
+- [去走路，消食也消化情绪](http://shixiaocaia.fun/posts/54548/)
 - [人是奇怪的动物](http://shixiaocaia.fun/posts/14054/)
 - [来到这个世界的第23年](http://shixiaocaia.fun/posts/9/)
 - [Hexo-AirCloud主题装修指南](http://shixiaocaia.fun/posts/53903/)
 - [Weekly |好好生活](http://shixiaocaia.fun/posts/36833/)
-- [Weekly |美式就好](http://shixiaocaia.fun/posts/47435/)
 <!-- BLOG-POST-LIST:END -->
