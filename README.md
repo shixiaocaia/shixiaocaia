@@ -15,9 +15,9 @@
 
 ### 📝 最近在说些什么
 <!-- BLOG-POST-LIST:START -->
-- [Weekly |Merry Christmas](http://shixiaocaia.fun/posts/48627/)
-- [Weekly |有情绪的周记-1](http://shixiaocaia.fun/posts/1482/)
-- [去走路，消食也消化情绪](http://shixiaocaia.fun/posts/54548/)
-- [人是奇怪的动物](http://shixiaocaia.fun/posts/14054/)
-- [来到这个世界的第23年](http://shixiaocaia.fun/posts/9/)
+- [人生最重要的一件事，就是要去想人生。](https://shixiaocaia.fun/posts/d20aa08d/)
+- [Weekly |Merry Christmas](https://shixiaocaia.fun/posts/48627/)
+- [Weekly |有情绪的周记-1](https://shixiaocaia.fun/posts/1482/)
+- [去走路，消食也消化情绪](https://shixiaocaia.fun/posts/54548/)
+- [人是奇怪的动物](https://shixiaocaia.fun/posts/14054/)
 <!-- BLOG-POST-LIST:END -->
