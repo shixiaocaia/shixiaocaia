@@ -1,8 +1,7 @@
 # .github/workflows/douban.yml
 name: douban
 on: 
-  schedule:
-  - on: push
+  push
   watch:
     types: [started]
 
