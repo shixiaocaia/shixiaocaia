@@ -1,5 +1,3 @@
-//by 怡红公子，修改自用
-
 # .github/workflows/douban.yml
 name: douban
 on:
