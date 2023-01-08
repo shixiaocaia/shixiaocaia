@@ -1,10 +1,9 @@
 # .github/workflows/douban.yml
 name: douban
 on: 
-  schedule:
-  - cron: "0 0,0,12,23 * * *"
-  watch:
-    types: [started]
+  schedule: # 自动运行workflow
+    - cron: '30 5 * * 1' # 每到整点运行一次
+  workflow_dispatch: # 可以手动在仓库的action中运行workflow
 
 jobs:
   douban:
