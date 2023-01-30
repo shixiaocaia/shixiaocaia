@@ -8,9 +8,9 @@
 
 ### 📝 最近在说些什么
 <!-- BLOG-POST-LIST:START -->
+- [Weekly |欢迎来到我的密室](https://shixiaocaia.fun/posts/f6106861/)
 - [新年快乐](https://shixiaocaia.fun/posts/8496fcc4/)
 - [Weekly |快乐倒腾的一周](https://shixiaocaia.fun/posts/7d95c632/)
 - [Hugo-Luna主题装修指南](https://shixiaocaia.fun/posts/7aee45b6/)
 - [人生最重要的一件事，就是要去想人生](https://shixiaocaia.fun/posts/d20aa08d/)
-- [Weekly |Merry Christmas](https://shixiaocaia.fun/posts/48627/)
 <!-- BLOG-POST-LIST:END -->
