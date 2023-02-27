@@ -8,9 +8,9 @@
 
 ### 📝 最近在说些什么
 <!-- BLOG-POST-LIST:START -->
+- [Weekly | 是春天](https://shixiaocaia.fun/posts/9ad93ebc/)
 - [Weekly | 也许是本命年的问题](https://shixiaocaia.fun/posts/1ec25370/)
 - [Weekly |欢迎来到我的密室](https://shixiaocaia.fun/posts/f6106861/)
 - [新年快乐](https://shixiaocaia.fun/posts/8496fcc4/)
 - [Weekly |快乐倒腾的一周](https://shixiaocaia.fun/posts/7d95c632/)
-- [Hugo-Luna主题装修指南](https://shixiaocaia.fun/posts/7aee45b6/)
 <!-- BLOG-POST-LIST:END -->
