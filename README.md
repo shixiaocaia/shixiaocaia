@@ -8,9 +8,9 @@
 
 ### 📝 最近在说些什么
 <!-- BLOG-POST-LIST:START -->
+- [Weekly | 羊了羊](https://shixiaocaia.fun/posts/39c6d7a0/)
 - [Weekly | 想喝点冰的季节](https://shixiaocaia.fun/posts/bf37bee0/)
 - [Weekly | 四月琐碎日常](https://shixiaocaia.fun/posts/d72d83c1/)
 - [Weekly | 是谁在晃荡](https://shixiaocaia.fun/posts/10b66b00/)
 - [Weekly | 动画是给成年人看的](https://shixiaocaia.fun/posts/691fc140/)
-- [Weekly | 从周记快变成月记了](https://shixiaocaia.fun/posts/b5fa2331/)
 <!-- BLOG-POST-LIST:END -->
