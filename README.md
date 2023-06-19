@@ -8,7 +8,7 @@
 
 ### 📝 最近在说些什么
 <!-- BLOG-POST-LIST:START -->
-- [Yearly | 是年记](https://shixiaocaia.fun/posts/d84d08ab/)
+- [Yearly | 八百字的延续](https://shixiaocaia.fun/posts/d84d08ab/)
 - [Weekly | 羊了羊](https://shixiaocaia.fun/posts/39c6d7a0/)
 - [Weekly | 想喝点冰的季节](https://shixiaocaia.fun/posts/bf37bee0/)
 - [Weekly | 四月琐碎日常](https://shixiaocaia.fun/posts/d72d83c1/)
