@@ -4,6 +4,7 @@ date: 2023-09-03 16:07:22
 tags: 
   - Linux
   - golang
+  - test
 ---
 
 ## 配置WSL
