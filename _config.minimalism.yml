@@ -34,8 +34,8 @@ contact:
   facebook:
 
 # 首页头像图片
-avatar: /images/avatar.png
-
+avatar: /images/logo.png
+favicon: /images/favicon.ico
 # 谷歌统计 跟踪 ID
 ga:
 

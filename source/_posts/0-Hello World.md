@@ -37,6 +37,14 @@ hexo clean # 清空缓存
 
 取决于你自己。
 
+本博客主题[Minimalism](https://minimalism.codeover.cn/docs/config/image)。
+
+修改配置文件后，务必清除缓存使配置生效
+
+```shell
+npm run clean
+```
+
 ## 部署到Github
 
 > 注意您上传的项目名称应为`username.github.io`
@@ -66,3 +74,4 @@ hexo d	# deploy
 
 4. 修改setting设置中的page中分支为上述分支。
 
+> 开始你的✍吧
