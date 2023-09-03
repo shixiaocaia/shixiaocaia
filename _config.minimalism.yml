@@ -3,14 +3,6 @@ menu:
     url: /
     External: false
     name: 首页
-  Tags:
-    url: /tags
-    External: false
-    name: 标签
-#  Categories:
-#    url: /categories
-#    External: false
-#    name: 分类
   Archives:
     url: /archives
     External: false
