@@ -37,6 +37,14 @@ localhostForwarding=true
 ### 使用docker
 
 ```shell
+ curl -fsSL https://test.docker.com -o test-docker.sh
+ sudo sh test-docker.sh
+ 
+ # 验证docker是否安装成功
+ systemctl status docker
+```
+
+```shell
 # 启动docker
 systemctl start docker
 
