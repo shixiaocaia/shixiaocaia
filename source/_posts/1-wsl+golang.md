@@ -8,9 +8,82 @@ tags:
 
 ## 配置WSL
 
+> 参考文章：[WSL安装](https://deepinout.com/wsl-tutorials/wsl-install-and-quick-start.html)
+
+### 切换root用户
+
+```shell
+sudo passwd root
+su
+```
+
+### 限制Vmmem内存
+
+1. 按下`Windows + R`键，输入`%UserProfile%`并运行进入用户文件夹
+
+2. 新建文件`.wslconfig`，然后记事本编辑
+
+3. 填入以下内容并保存, memory为系统内存上限，这里我限制最大2GB，可根据自身电脑配置设置
+
+```shell
+[wsl2]
+memory=4GB
+swap=8GB
+localhostForwarding=true
+```
+
+4. 输入`wsl --shutdown`来关闭当前的子系统，重启wsl
+
+### 使用docker
+
+```shell
+# 启动docker
+systemctl start docker
+
+# 查看当前的容器
+
+docker ps -a
+
+# 启动容器
+docker  start 容器名或者容器id
+
+# 停止容器
+docker  stop 容器名或容器id
 
 
+# 强制关闭容器
+docker container kill 容器名或容器id
+# 或可简写为
+docker kill 容器名或容器id
+```
 
+### 配置Git
+
+```shell
+$ apt-get install libcurl4-gnutls-dev libexpat1-dev gettext \
+  libz-dev libssl-dev
+
+$ apt-get install git
+
+$ git --version
+git version 1.8.1.2
+```
+
+```shell
+# 配置用户信息
+git config --global user.name "runoob"​
+git config --global user.email shixiaocaia@gmail.com​
+git config --list
+
+# 配置SSH
+ssh-keygen -t rsa -C "这里换上你的邮箱"
+# 不需要密码，直接三次回车
+# 生成id_rsa和id_rsa.pub
+# 添加公钥pub文件内容，到Settings -- SSH and GPG keys​
+cat ~/.ssh/id_rsa.pub
+# 测试配置成功
+ssh -T git@github.com
+```
 
 ## 自动安装
 
