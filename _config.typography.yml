@@ -2,11 +2,9 @@ title_primary: "ShiXiaoCaia" # the bigger text
 title_secondary: "OutAtSea" # the smaller text
 keywords:
 
-twitter: #username
+favicon: /images/favicon.ico
 rss: atom.xml
-weibo: #username/id
-instagram: #username
-github: #username
+github: shixiaocaia
 
 # Choose the comment service according to your need.
 # Please do not use the two services at the same time.
