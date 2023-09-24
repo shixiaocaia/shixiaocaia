@@ -1,4 +1,4 @@
-title_primary: "ShiXiaoCaia" # the bigger text
+title_primary: "是小菜啊" # the bigger text
 title_secondary: "OutAtSea" # the smaller text
 keywords:
 
@@ -21,3 +21,5 @@ showTags: true
 
 # Color scheme
 themeStyle: light # light/dark
+
+truncate_len: 100
