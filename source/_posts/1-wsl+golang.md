@@ -79,7 +79,7 @@ git version 1.8.1.2
 
 ```shell
 # 配置用户信息
-git config --global user.name "runoob"​
+git config --global user.name "shixiaocaia"​
 git config --global user.email shixiaocaia@gmail.com​
 git config --list
 
@@ -107,13 +107,13 @@ apt remove golang-go
 1. 查看[google发布的golang版本](https://golang.google.cn/dl/)，选择合适的版本安装。
 
 ```shell
-wget https://studygolang.com/dl/golang/go1.15.2.linux-amd64.tar.gz
+wget https://studygolang.com/dl/golang/go1.20.5.linux-amd64.tar.gz
 ```
 
 2. 解压到`/usr/local`
 
 ```shell
-tar -C /usr/local -xzf go1.15.2.linux-amd64.tar.gz
+tar -C /usr/local -xzf go1.20.5.linux-amd64.tar.gz
 ```
 
 3. 设置环境变量
