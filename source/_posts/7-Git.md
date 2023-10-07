@@ -203,7 +203,7 @@ git push origin main
 
 ### merge VS rebase
 
-- 当产生冲突时，需要处理冲突部分文件，再重新提交merge后的结果
+- 当产生冲突时，需要处理冲突部分文件，再重新提交merge后的结果（git add  + commit 冲突文件）
 - 使用git merge，最后会生成一个merge提交记录
 
 ![image-20230930092527055](../images/image-20230930092527055.png)
