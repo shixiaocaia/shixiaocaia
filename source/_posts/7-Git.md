@@ -5,6 +5,8 @@ tags:
     - 是什么
 ---
 
+> 参考文章
+>
 > [GeekHour Git教程](https://www.bilibili.com/list/watchlater?oid=528356813&bvid=BV1HM411377j&spm_id_from=..top_right_bar_window_view_later.content.click&p=9)
 
 ## 环境配置
@@ -161,6 +163,16 @@ git branch origin :remote_branch_name
 
 # 查看分支属于哪部分拉出来的
 git reflog --date=local | grep <branchname> 
+```
+
+### pull
+
+```shell
+# 拉取最新的origin代码
+git fetch origin 
+
+# 基于某个远程分支创建新的本地分支
+git checkout -b main origin/main
 ```
 
 ### push
