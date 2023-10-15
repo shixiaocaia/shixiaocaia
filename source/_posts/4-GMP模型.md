@@ -57,7 +57,7 @@ goroutine是从普通的coroutine演变过来的，做了如下优化：
 
 GMP是go语言协程调度模型，其由协程goroutine + 内核线程machine + 逻辑处理器processor 构成，通过调度器P将可执行的协程G放到对应的工作线程M上调度执行。
 
-![f0499e91-cfd4-4626-bce4-f10550651190](../images/f0499e91-cfd4-4626-bce4-f10550651190.png)
+![f0499e91-cfd4-4626-bce4-f10550651190](../images/gmp-1.png)
 
 
 
@@ -102,7 +102,7 @@ type g struct {
 
 m对应后续绑定的执行线程，可以进行动态调整
 
-![图片](../images/640.png)
+![图片](../images/gmp-2.png)
 
 整个goroutine生命周期包括如上几个状态：
 

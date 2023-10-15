@@ -84,8 +84,8 @@ ssh -T git@github.com
 
 ## 工作区域
 
-![0bc63cb7-4c90-4680-8749-9091a262b19c](../images/0bc63cb7-4c90-4680-8749-9091a262b19c.png)
-![6f8f53a3-1bf8-499a-967f-28758e0993ec](../images/6f8f53a3-1bf8-499a-967f-28758e0993ec.png)
+![0bc63cb7-4c90-4680-8749-9091a262b19c](../images/git-1.png)
+![6f8f53a3-1bf8-499a-967f-28758e0993ec](../images/git-2.png)
 
 - workspace：实际操作的目录
 - staging area：暂存区，临时存放修改
@@ -94,7 +94,7 @@ ssh -T git@github.com
 
 ---
 
-![a528f4cb-9d53-40a7-bcda-23433dfbe999](../images/a528f4cb-9d53-40a7-bcda-23433dfbe999.png)一开始创建文件，是未跟踪状态，通过`git add .`添加到暂存区
+![a528f4cb-9d53-40a7-bcda-23433dfbe999](../images/git-3.png)一开始创建文件，是未跟踪状态，通过`git add .`添加到暂存区
 
 - `git commit`只会提交暂存区的内容，不会提交工作区内的内容，所以需要先`git add.`添加所有文件到暂存区，再提交
 - `git ls-files`查看暂存区内容
@@ -218,7 +218,7 @@ git push origin main
 - 当产生冲突时，需要处理冲突部分文件，再重新提交merge后的结果（git add  + commit 冲突文件）
 - 使用git merge，最后会生成一个merge提交记录
 
-![image-20230930092527055](../images/image-20230930092527055.png)
+![image-20230930092527055](../images/git-4.png)
 
 - git rebase
   - 在dev分支下，git rebase main会把两个分支的交界点开始，后的dev:1，dev:2分支内容移动到main的head头节点之后，并且此时总的分支为dev
@@ -232,7 +232,7 @@ git push origin main
 
 ## GitFlow模型
 
-![img](../images/20230930.webp)
+![img](../images/git-5.webp)
 
 - 主要分支
   - main/master分支：可以部署发布
@@ -246,7 +246,7 @@ git push origin main
 
 ## Github Flow模型
 
-![img](../images/202309301.png)
+![img](../images/git6.png)
 
 - 主要维护一个主分支master/main，是随时可以部署发布的内容
 - 需求新增基于master分支，合并到master分支需要PR，master分支内容一经合并，可以立即部署使用
