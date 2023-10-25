@@ -167,5 +167,11 @@ go version
 
 - 运行/调试配置更改
 
+## 常见问题
 
+### 127.0.0.1
+
+wsl下的127.0.0.1并不能正确访问，应该使用localhost进行访问，得到一种解释：127.0.0.1要走从网络层全链路走一圈的，localhost则不必，所以是wsl2环境问题。
+
+官方文档使用wsl的注意点：https://learn.microsoft.com/zh-cn/windows/wsl/networking。
 
