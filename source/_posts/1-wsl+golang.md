@@ -93,6 +93,22 @@ cat ~/.ssh/id_rsa.pub
 ssh -T git@github.com
 ```
 
+### 启动目录
+
+- 打开中终端设置，搜索wsl
+
+```shell
+{
+    "guid": "{72130475-4d4b-5774-bc1a-2a09ff7f0056}",
+    "hidden": false,
+    "name": "Ubuntu2204",
+    "source": "Windows.Terminal.Wsl",
+    "startingDirectory": "//wsl$/Ubuntu2204/home/xiaocai"
+}
+```
+
+- 如果是其他终端工具，设置工作目录`//wsl$/Ubuntu2204/home/xiaocai`
+
 ## 自动安装
 
 ```shell
@@ -171,7 +187,33 @@ go version
 
 ### 127.0.0.1
 
-wsl下的127.0.0.1并不能正确访问，应该使用localhost进行访问，得到一种解释：127.0.0.1要走从网络层全链路走一圈的，localhost则不必，所以是wsl2环境问题。
+[官方文档说明](https://learn.microsoft.com/zh-cn/windows/wsl/networking)
 
-官方文档使用wsl的注意点：https://learn.microsoft.com/zh-cn/windows/wsl/networking。
+- wsl下的`127.0.0.1`并不能正确访问，应该使用`localhost`进行访问，得到一种解释：`127.0.0.1`要走从网络层全链路走一圈的，`localhost`则不必。
+- wsl访问windows下的服务，需要通过IP地址方式，`ip route | grep default | awk '{print $3}'`获取本机IP地址。
+
+### wsl备份以及恢复
+
+```shell
+wsl -l -v # 确认wsl版本
+
+# 提前创建文件夹
+wsl --export Ubuntu2204 D:\wsl\ubuntu.tar # 导出Ubuntu2204 到d盘
+
+wsl --unregister Ubuntu2204 # 注销旧版本
+
+wsl -l -v # 确认注销
+
+wsl --import Ubuntu2204 D:\wsl D:\wsl\ubuntu.tar # 导入备份文件
+
+wsl -s Ubuntu2204 # 设置为默认
+```
+
+还原后的子系统进入后，默认成了 root 用户，解决方法如下，在终端启动时，配置`wsl.exe -d Ubuntu2204 -u xiaocai`。
+
+### docker-desktop
+
+- 默认情况下，Docker Desktop for Window会创建如下两个发行版（distro）：
+  - docker-desktop：用于存放程序
+  - docker-desktop-data：用于存放镜像
 
