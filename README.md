@@ -8,9 +8,9 @@
 
 ### 📝 最近在说些什么
 <!-- BLOG-POST-LIST:START -->
+- [Monthly | 九点遛狗](https://shixiaocaia.fun/posts/945bd74e/)
 - [Weekly | OutAtSea](https://shixiaocaia.fun/posts/f0aad15a/)
 - [Game | 我四十岁的样子](https://shixiaocaia.fun/posts/5a70220d/)
 - [Monthly | Summer Hoilday](https://shixiaocaia.fun/posts/5e64211e/)
 - [Monthly | don&#39;t get lost](https://shixiaocaia.fun/posts/5cfb3774/)
-- [Weekly | 夏至](https://shixiaocaia.fun/posts/a58cd0b9/)
 <!-- BLOG-POST-LIST:END -->
