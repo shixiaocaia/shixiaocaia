@@ -8,9 +8,9 @@
 
 ### 📝 最近在说些什么
 <!-- BLOG-POST-LIST:START -->
+- [Yearly | 二十四的我，是情绪怪物](https://shixiaocaia.fun/posts/8dab065f/)
 - [Monthly | 九点遛狗](https://shixiaocaia.fun/posts/945bd74e/)
 - [Weekly | OutAtSea](https://shixiaocaia.fun/posts/f0aad15a/)
 - [Game | 我四十岁的样子](https://shixiaocaia.fun/posts/5a70220d/)
 - [Monthly | Summer Hoilday](https://shixiaocaia.fun/posts/5e64211e/)
-- [Monthly | don&#39;t get lost](https://shixiaocaia.fun/posts/5cfb3774/)
 <!-- BLOG-POST-LIST:END -->
