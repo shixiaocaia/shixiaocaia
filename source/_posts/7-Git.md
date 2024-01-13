@@ -10,6 +10,8 @@ tags:
 > [GeekHour Git教程](https://www.bilibili.com/list/watchlater?oid=528356813&bvid=BV1HM411377j&spm_id_from=..top_right_bar_window_view_later.content.click&p=9)
 >
 > [菜就多练](https://learngitbranching.js.org/?locale=zh_CN)
+>
+> [CSDN-工作中如何使用Git的](https://juejin.cn/post/6974184935804534815#heading-15)
 
 ## 环境配置
 
@@ -309,6 +311,41 @@ A---B---C---F master
 
 - 用于获取某个分支的单个提交，引入到当前分支来，可以同时合并多个，不连续的分支
 - 其实可以基于rebase实现一部分
+
+### reset VS revert
+
+`git reset`回退到某一个版本，默认上一个版本
+
+- --soft，保留工作区和暂存区
+- --hard，删除两个版本之间工作区和暂存区的内容
+- --mixed，只保留工作区内容，清空暂存区内容
+- 指令后面跟上版本号，比如`git reset --hard 234asda`
+- 如果误操作了Git，可以通过`git reflog`查看操作的历史记录，使用`git reset --hard 234asda`回退误操作之前的命令
+
+`git revert`撤销某一次commit，同时新增一条commit记录，reset过于暴力。
+
+对于个人的 feature 分支而言，可以使用 `git reset` 来回退历史记录，之后使用 `git push --force` 进行推送到远程
+
+但是如果是在多人协作的集成分支上，不推荐直接使用 `git reset` 命令，而是使用更加安全的 `git revert` 命令进行撤回提交。这样，提交的历史记录不会被抹去，可以安全的进行撤回。
+
+### git stash
+
+用于切换不同分支时，在不提交的前提下，临时保存到暂存区。
+
+```shell
+git stash //把本地的改动暂存起来
+git stash save "message" 执行存储时，添加备注，方便查找。
+git stash pop // 应用最近一次暂存的修改，并删除暂存的记录
+git stash apply  // 应用某个存储,但不会把存储从存储列表中删除，默认使用第一个存储,即 stash@{0}，如果要使用其他个，git stash apply stash@{$num} 。
+git stash list // 查看 stash 有哪些存储
+git stash clear // 删除所有缓存的 stash
+```
+
+### 不同工作取得撤销更改
+
+- git status查看当前状态，修改、跟踪情况
+- git checkout --<filename>，撤回工作区的修改
+- git reset <filename>，撤回暂存区修改，
 
 ## GitFlow模型
 
