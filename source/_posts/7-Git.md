@@ -13,7 +13,7 @@ tags:
 
 ```shell
 # 配置SSH
-ssh-keygen -t rsa -C "这里换上你的邮箱"
+ssh-keygen -t rsa -C "这里换上你的邮箱，备注信息"
 # 不需要密码，直接三次回车
 # 生成id_rsa和id_rsa.pub
 # 添加公钥pub文件内容，到Settings -- SSH and GPG keys
@@ -87,24 +87,48 @@ ssh -T git@github.com
 ![0bc63cb7-4c90-4680-8749-9091a262b19c](../images/git-1.png)
 ![6f8f53a3-1bf8-499a-967f-28758e0993ec](../images/git-2.png)
 
-- workspace：实际操作的目录
-- staging area：暂存区，临时存放修改
-- local Repository：本地代码，版本信息
-- Remote Repository：远程仓库
+- workspace：工作区，实际操作的目录；
+- staging area / index：暂存区，临时存放修改，通过`git add`命令添加工作区文件到暂存区；
+- local Repository：本地仓库，通过`git commit` 提交暂存区内容，会进入本地仓库；
+- Remote Repository：远程仓库，用来托管代码。
 
 ---
 
-![a528f4cb-9d53-40a7-bcda-23433dfbe999](../images/git-3.png)一开始创建文件，是未跟踪状态，通过`git add .`添加到暂存区
+![a528f4cb-9d53-40a7-bcda-23433dfbe999](../images/git-3.png)
 
-- `git commit`只会提交暂存区的内容，不会提交工作区内的内容，所以需要先`git add.`添加所有文件到暂存区，再提交
+- 一开始创建文件，是未跟踪状态，通过`git add .`添加到暂存区，每次修改后都需要`git add . `添加到暂存区
+
 - `git ls-files`查看暂存区内容
+
+- `git commit`提交暂存区的内容到本地仓库
+  
+  - 不会提交工作区内的内容，所以需要先`git add.`添加所有文件到暂存区，再提交
+  - `git commit -m "your message"`，记录备注信息
+  
 - `git log`查看commit记录，`git log --oneline`查看简洁提交记录
-- `git rest`回退到某一个版本
+
+- `git reflog`
+
+  ```shell
+  $ git reflog
+  8718541 (HEAD -> main) HEAD@{0}: reset: moving to 87185414b36cf347c173d0063a721ebf7a9e5737
+  8718541 (HEAD -> main) HEAD@{1}: reset: moving to 87185414b36cf347c173d0063a721ebf7a9e5737
+  8718541 (HEAD -> main) HEAD@{2}: commit: tt
+  884fc87 HEAD@{3}: commit: test2
+  c7d1abc HEAD@{4}: commit: test
+  8bbcf7c HEAD@{5}: reset: moving to HEAD
+  8bbcf7c HEAD@{6}: commit (amend): test2
+  ```
+
+  - 输出`HEAD@{6}`，是相对当前时间的索引位置，越大数字代表越早的操作，可以用`HEAD@{6}`或者8718541哈希值来定位
+
+
+- `git reset`回退到某一个版本，默认上一个版本
   - --soft，保留工作区和暂存区
   - --hard，删除两个版本之间工作区和暂存区的内容
   - --mixed，只保留工作区内容，清空暂存区内容
-  - 指令后面跟上版本号，比如``git rest --hard 234asda``
-  - 如果误操作了Git，`git -reflog`操作的历史记录，然后使用`git rest --hard 234asda`回退误操作之前的命令
+  - 指令后面跟上版本号，比如`git reset --hard 234asda`
+  - 如果误操作了Git，可以通过`git reflog`查看操作的历史记录，使用`git reset --hard 234asda`回退误操作之前的命令
 - `git diff`默认查看工作区和暂存区之间的差异内容
   - `git diff HEAD`查看工作区和最新提交之间的之间的差异
   - `git diff --cached`查看工作区和版本库之间的差异
@@ -134,6 +158,19 @@ git pull -u origin main
 - 初始化后的.git文件夹，通过`ls -a`显示，包含了仓库的信息，一般隐藏避免删除
 - `git remote -v`获取远程仓库信息
 
+### commit
+
+```shell
+# 提交暂存的更改，会新开编辑器进行编辑
+git commit 
+# 提交暂存的更改，并记录下备注
+git commit -m "you message"
+# 等同于 git add . && git commit -m
+git commit -am
+# 对最近一次的提交的信息进行修改,此操作会修改commit的hash值
+git commit --amend
+```
+
 ### branch
 
 ```shell
@@ -161,6 +198,9 @@ git branch origin :remote_branch_name
 # :表示删除
 # 如果是未被合并的命令，需要通过-D来强制删除
 
+# 重命名分支
+git branch -m <old-branch-name> <new-branch-name>
+
 # 查看分支属于哪部分拉出来的
 git reflog --date=local | grep <branchname> 
 ```
@@ -175,11 +215,11 @@ git fetch origin
 git checkout -b main origin/main
 ```
 
-### push
+### push VS fetch
 
 ```shell
-# 拉取最新远程代码到本地
-git fetch
+# 拉取最新远程代码到本地，获取特定分支变化
+git fetch <远程主机名> <分支名>
 
 # 合并最新代码
 git merge origin/main
@@ -187,10 +227,18 @@ git merge origin/main
 # git pull = git fetch & git merge origin main
 git pull <远程主机名> <远程分支名>:<本地分支名>
 # 一般本地分支名和远程分支名相同时，合并分支名
+
+# 用rebase 替代 merge，保证公共代码合并到当前分支是线性的
+git pull --rebase
 ```
 
-- 在不同分支下开发，不需要先merge主分支的内容，通过提交PR，完成和主分支的合并
-- 当开发新功能，从主分支拉取，过程中可能也会pull最新代码
+- 在实际中进行PR之前，需要fetch最新的，然后rebase origin/main，将分支变基到目标分支的最新版本，以便包含最新的变更
+- 如果过程中产生冲突，按序解决
+  - 处理产生冲突的文件
+  - git add 文件名，标记处理完的文件，这里会创建一个虚拟提交，不需要手动的commit
+  - git rebase --continue，这个过程中是一个个处理变基commit，可能发生多次冲突。继续执行rebase操作，重复执行
+  - git push origin test_branch --force，处理完成后
+
 
 ### gitignore
 
@@ -210,25 +258,47 @@ git push origin main
   - 运行时生成的日志文件、缓存文件、临时文件
   - 涉及身份、密码、口令、密钥等敏感信息文件
 - 将需要忽略的文件写入到gitignore文件当中，**如果文件已经存在版本库当中，需要先删除，才能生效**
-  - git rm  --cached xxx删除记录
+  - git rm  --cached xxx删除记录，删除暂存区内文件
 - 根据官方的gitignore的不同语言版本进行修改
 
 ### merge VS rebase
 
-- 当产生冲突时，需要处理冲突部分文件，再重新提交merge后的结果（git add  + commit 冲突文件）
-- 使用git merge，最后会生成一个merge提交记录
+```shell
+     D---E test
+    /
+A---B---C---F master
+```
 
-![image-20230930092527055](../images/git-4.png)
+- git merge
+
+  ```shell
+       D--------E
+      /          \
+  A---B---C---F---G    test , master
+  ```
+
+  - 当产生冲突时，需要处理冲突部分文件，再重新提交merge后的结果（`git add  + commit`冲突文件），会生成一次提交G
+  - 融合代码到公共分支时使用git merge，而不是git rebase
+
 
 - git rebase
-  - 在dev分支下，git rebase main会把两个分支的交界点开始，后的dev:1，dev:2分支内容移动到main的head头节点之后，并且此时总的分支为dev
-  - 对比左侧和右侧，右侧最终合并后的分支记录全部保存到main当中
-  - git switch/checkout branch，决定了最终分支名
-  - git rebase branch，决定了交界点之后，以那一条线为主线，移动另一条线到最后
+
+  ```shell
+   A---B---D---E---C `---F` test , master
+  ```
+
+  - 在master下执行rebase，会以master为合并后的分支，将test分支内容以交界点变基到master上，老的提交没有销毁不能再被访问或者使用；
+  - 产生冲突需要逐个处理，`git add .` `git rebase -continue`，或者`git rebase -skip`忽略当前冲突；
+  - rebase后当前分支会与线上分支不同（加入了新的commit），需要`--force`强制；
+  - `git rebase -i HEAD~4`，用于合并多次提交记录，注意是从上往下；
+  - 融合代码到个人分支时候使用`git rebase`，可以不污染分支的提交记录，形成简洁的线性提交历史记录。
+  
 - git rebase和git merge区别
-  - git merge不会破坏原分支的提交记录，方便回溯和查看。缺点是产生额外的提交节点，分支图比较复杂
-  - git rebase不需要新增额外的提交记录，形成线性历史，直观和干净。缺点会改变提交历史，改变当前分支branch out的节点，**避免在共享分支中使用**。
-  - 如果是一个人开发，为了提交记录的清晰明了，使用git rebase
+  - git merge不会破坏原分支的提交记录，方便回溯和查看，缺点是产生额外的提交节点，分支图比较复杂；
+  - git rebase不需要新增额外的提交记录，形成**线性历史**，直观和干净。缺点会改变提交历史，需要处理多次冲突问题；
+  - 公共代码-->个人分支：git rebase，线性提交记录；个人分支-->公共代码：git merge；
+
+- 常见的公共分支，master分支，feature是个人分支
 
 ## GitFlow模型
 

@@ -65,15 +65,30 @@ docker container kill 容器名或容器id
 docker kill 容器名或容器id
 ```
 
+```shell
+docker ps
+
+docker exec -it d498d9f00612 /bin/bash
+
+select  host, user, authentication_string, plugin from mysql.user;
+
+use mysql
+
+update user set host = '%' where user = 'root';
+alter user 'root'@'%' identified with mysql_native_password by 'shixiaocaia';
+
+FLUSH PRIVILEGES;
+```
+
+
+
 ### 配置Git
 
 ```shell
-$ apt-get install libcurl4-gnutls-dev libexpat1-dev gettext \
-  libz-dev libssl-dev
+sudo apt update
+sudo apt install git
 
-$ apt-get install git
-
-$ git --version
+git --version
 git version 1.8.1.2
 ```
 
@@ -216,4 +231,32 @@ wsl -s Ubuntu2204 # 设置为默认
 - 默认情况下，Docker Desktop for Window会创建如下两个发行版（distro）：
   - docker-desktop：用于存放程序
   - docker-desktop-data：用于存放镜像
+- docker-desktop-data部分应该按照5.2一样正常迁移
+
+```shell
+wsl --export docker-desktop-data D:\wsl\docker-data.tar
+
+wsl --unregister docker-desktop-data
+
+wsl --import docker-desktop-data D:\wsl\docker D:\wsl\docker-data.tar
+
+wsl -l -v
+```
+
+### goland error obtaining VCS status: exit status 128
+
+设置，`go env -w GOFLAGS="-buildvcs=false"`
+
+### fatal: detected dubious ownership in repository at
+
+- 启动用户更换成了root，导致goland打开项目时也是root，和创建文件的xiaocai不一致
+- 修改/etc/wsl.conf，设置默认启动用户
+
+```shell
+[boot]
+systemd=true
+
+[user]
+default = xiaocai
+```
 
