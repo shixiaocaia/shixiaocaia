@@ -8,6 +8,8 @@ tags:
 > 参考文章
 >
 > [GeekHour Git教程](https://www.bilibili.com/list/watchlater?oid=528356813&bvid=BV1HM411377j&spm_id_from=..top_right_bar_window_view_later.content.click&p=9)
+>
+> [菜就多练](https://learngitbranching.js.org/?locale=zh_CN)
 
 ## 环境配置
 
@@ -209,7 +211,10 @@ git reflog --date=local | grep <branchname>
 
 ```shell
 # 拉取最新的origin代码
-git fetch origin 
+git fetch
+
+# 拉取并更新本地
+git fetch origin main:local_branch
 
 # 基于某个远程分支创建新的本地分支
 git checkout -b main origin/main
@@ -225,7 +230,7 @@ git fetch <远程主机名> <分支名>
 git merge origin/main
 
 # git pull = git fetch & git merge origin main
-git pull <远程主机名> <远程分支名>:<本地分支名>
+git pull <远程主机名> <本地分支名>:<远程分支名>
 # 一般本地分支名和远程分支名相同时，合并分支名
 
 # 用rebase 替代 merge，保证公共代码合并到当前分支是线性的
@@ -299,6 +304,11 @@ A---B---C---F master
   - 公共代码-->个人分支：git rebase，线性提交记录；个人分支-->公共代码：git merge；
 
 - 常见的公共分支，master分支，feature是个人分支
+
+### git cherry-pick
+
+- 用于获取某个分支的单个提交，引入到当前分支来，可以同时合并多个，不连续的分支
+- 其实可以基于rebase实现一部分
 
 ## GitFlow模型
 
