@@ -5,13 +5,15 @@ tags:
     - 是什么
 ---
 
-> 参考文章
->
+## 参考文章
+
 > [GeekHour Git教程](https://www.bilibili.com/list/watchlater?oid=528356813&bvid=BV1HM411377j&spm_id_from=..top_right_bar_window_view_later.content.click&p=9)
 >
 > [菜就多练](https://learngitbranching.js.org/?locale=zh_CN)
 >
 > [CSDN-工作中如何使用Git的](https://juejin.cn/post/6974184935804534815#heading-15)
+>
+> [阮一峰 Git 工作流程](https://www.ruanyifeng.com/blog/2015/12/git-workflow.html)
 
 ## 环境配置
 
@@ -149,6 +151,9 @@ ssh -T git@github.com
 
 ```shell
 git init
+
+# 拉取项目
+git clone <URL>
 
 git remote add origin url / ssh
 # 使用ssh连接不需要登陆验证
@@ -347,7 +352,7 @@ git stash clear // 删除所有缓存的 stash
 - git checkout --<filename>，撤回工作区的修改
 - git reset <filename>，撤回暂存区修改，
 
-## GitFlow模型
+## Git flow
 
 ![img](../images/git-5.webp)
 
@@ -355,16 +360,25 @@ git stash clear // 删除所有缓存的 stash
   - main/master分支：可以部署发布
   - develop分支：最新开发状态
 - 辅助分支
-  - feature: **开发新功能**的分支, 基于 develop, 完成后 merge 回 develop；
-  - release: 辅助版本发布的分支, 用来**测试修复** bug，基于 develop, 完成后 merge 回 develop 和 master
-  - hotfix: **修复 main 上的问题**,  基于 master, 完成后 merge 回 master 和 develop
-- 通过git-flow使用
+  - feature：**开发新功能**的分支, 基于 develop, 完成后 merge 回 develop；
+  - release：辅助版本发布的分支, 用来**测试修复** bug，基于 develop, 完成后 merge 回 develop 和 master
+  - hotfix：**修复 main 上的问题**,  基于 master, 完成后 merge 回 master 和 develop
 - GitFlow模型分支管理严格，代码合并清晰，适合中大型团队使用，但是分支流程过多较为复杂
 
-## Github Flow模型
+## Github flow
 
 ![img](../images/git6.png)
 
 - 主要维护一个主分支master/main，是随时可以部署发布的内容
 - 需求新增基于master分支，合并到master分支需要PR，master分支内容一经合并，可以立即部署使用
 - 相比前者分支足够简单，但不适合多版本产品线使用
+
+## Gitlab flow
+
+结合上述优点，既有适应不同开发环境的弹性，又有单一主分支的简单和便利。
+
+主要包含两种方式，持续发布和版本发布。
+
+持续发布主要是在master分支的基础上建立了pre-producition，production分支，master是pre-production的上游，反之下游，开发过程中不断递进发布，从上游到下游。只有紧急情况才会跳过上游。
+
+版本发布建议的做法是每一个稳定版本，都要从`master`分支拉出一个分支，比如`2-3-stable`、`2-4-stable`等等。以后，只有修补bug，才允许将代码合并到这些分支，并且此时要更新小版本号。

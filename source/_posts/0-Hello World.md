@@ -75,3 +75,15 @@ hexo d	# deploy
 4. 修改setting设置中的page中分支为上述分支。
 
 > 开始你的✍吧
+
+## 补充问题
+
+### 同步theme
+
+在更换设备后重新拉取项目时，并不会直接拉取theme下的子内容
+
+```shell
+git submodule init
+git submodule update
+```
+
