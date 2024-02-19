@@ -8,9 +8,9 @@
 
 ### 📝 最近在说些什么
 <!-- BLOG-POST-LIST:START -->
+- [Weekly | 新年的迷茫与期望](https://shixiaocaia.fun/posts/bf3129a8/)
 - [Yearly | 2023年落幕](https://shixiaocaia.fun/posts/a6306dfc/)
 - [Yearly | 二十四的我，是情绪怪物](https://shixiaocaia.fun/posts/8dab065f/)
 - [Monthly | 九点遛狗](https://shixiaocaia.fun/posts/945bd74e/)
 - [Weekly | OutAtSea](https://shixiaocaia.fun/posts/f0aad15a/)
-- [Game | 我四十岁的样子](https://shixiaocaia.fun/posts/5a70220d/)
 <!-- BLOG-POST-LIST:END -->
