@@ -8,9 +8,9 @@
 
 ### 📝 最近在说些什么
 <!-- BLOG-POST-LIST:START -->
+- [社畜倒计时 | 我在蔚来](https://shixiaocaia.fun/posts/b79f985a/)
 - [Weekly | 新年的迷茫与期望](https://shixiaocaia.fun/posts/bf3129a8/)
 - [Yearly | 2023年落幕](https://shixiaocaia.fun/posts/a6306dfc/)
 - [Yearly | 二十四的我，是情绪怪物](https://shixiaocaia.fun/posts/8dab065f/)
 - [Monthly | 九点遛狗](https://shixiaocaia.fun/posts/945bd74e/)
-- [Weekly | OutAtSea](https://shixiaocaia.fun/posts/f0aad15a/)
 <!-- BLOG-POST-LIST:END -->
