@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="shixiaocaia" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      分布式场景 | 全局ID生成 
+      
+      
+      |
+    
+     shixiaocaia
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.ico">
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="shixiaocaia" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism.css" type="text/css"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.jpg" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">shixiaocaia</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">分布式场景 | 全局ID生成</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2024-01-14 17:09:30
+        </span>
+        
+      </div>
+      <div class="markdown-body">
+        <blockquote>
+<p>参考文章</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://tech.meituan.com/2017/04/21/mt-leaf.html">Leaf——美团点评分布式ID生成系统</a></li>
+<li><a target="_blank" rel="noopener" href="https://javaguide.cn/distributed-system/distributed-id.html">JavaGuide</a></li>
+<li><a target="_blank" rel="noopener" href="https://pdai.tech/md/arch/arch-z-id.html">分布式系统-全局唯一ID实现方案</a></li>
+</ul>
+</blockquote>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在复杂分布式系统中，需要对大量的数据和消息进行<strong>唯一标识</strong>，比如美团点评的金融、支付、餐饮等产品系统，淘宝的订单号…</p>
+<p>单纯的数据库自增ID无法满足需求：</p>
+<ol>
+<li>ID冲突问题：在跨数据中心的分布式系统中，由于网络延迟和其他因素，单纯的数据库自增ID很难确保全局唯一性。</li>
+<li>单点故障：如果数据库出现问题或宕机，那么新的ID将无法生成，从而影响整个系统的可用性。</li>
+<li>ID预测问题：因为自增ID是连续的，恶意用户可能会尝试预测下一个ID，从而可能进行某种形式的攻击或数据抓取。</li>
+<li>迁移和备份问题：在数据迁移或备份恢复的过程中，自增ID可能会带来问题，因为原始的ID序列可能会被打破。</li>
+<li>…</li>
+</ol>
+<p>一个好的ID生成系统应该满足什么：</p>
+<ul>
+<li>全局唯一性</li>
+<li>趋势递增</li>
+<li>单调递增</li>
+<li>信息安全</li>
+</ul>
+<blockquote>
+<p>常用的性能评价指标：</p>
+<ul>
+<li>QPS：每秒钟处理的查询或请求数量。</li>
+<li>TPS：每秒钟处理的事务数量。事务的定义可以根据上下文而变，但通常指的是一个完整的操作，例如从数据库中读取或写入数据。</li>
+<li>RT：系统响应请求所需的时间。</li>
+<li>Latency：数据从源点到目的地的传输时间。</li>
+</ul>
+</blockquote>
+<h2 id="UUID"><a href="#UUID" class="headerlink" title="UUID"></a>UUID</h2><p>UUID(Universally Unique Identifier)的标准型式包含32个16进制数字，以连字号分为五段，形式为8-4-4-4-12的36个字符，示例：<code>550e8400-e29b-41d4-a716-446655440000</code>。</p>
+<p>存在几种不同版本的UUID，每个版本都有自己的生成方法。最常用的版本是v1（基于时间和机器的MAC地址）和v4（基于随机数）</p>
+<p>优点：性能高，基于本地生成，没有网络传输消耗。</p>
+<p>缺点：</p>
+<ul>
+<li>过长不易于存储：UUID本身包含32个16进制数，算上4个连字符，二进制下需要（32 + 4 ） * 4 &#x3D; 144位。</li>
+<li>信息不安全：基于MAC地址生成UUID的算法可能会造成MAC地址泄露。</li>
+<li>不适合作为DB主键，在特定场景下存在问题<ul>
+<li>MySQL官方有明确的建议主键要尽量越短越好</li>
+<li>作为主键时，有序性能够保证数据在物理上的顺序，提高数据的读取效率；在InnoDB的B+树索引下，支持主键的有序性能够保证范围查询的效率；每次插入新数据时，都是插入到主键索引的最后一个位置，这样就避免了数据移动和索引重建的开销</li>
+</ul>
+</li>
+</ul>
+<h2 id="雪花算法"><a href="#雪花算法" class="headerlink" title="雪花算法"></a>雪花算法</h2><h3 id="1-组成"><a href="#1-组成" class="headerlink" title="1. 组成"></a>1. 组成</h3><p>雪花算法是由Twitter开源的分布式ID生成算法，以划分命名空间的方式将 64-bit位分割成多个部分，每个部分代表不同的含义。</p>
+<p><img src="/../images/1460000040964520.png" alt="img"></p>
+<ul>
+<li>1位是符号位，也就是最高位，始终是0，没有任何意义，因为要是唯一计算机二进制补码中就是负数，0才是正数。</li>
+<li>41位是时间戳，具体到毫秒，41位的二进制可以使用69年，因为时间理论上永恒递增，所以根据这个排序是可以的。</li>
+<li>10位是机器标识，10位最多可以表示1024台机器，雪花算法的Id唯一性主要靠机器码保证。<ul>
+<li>如果对IDatacenter（互联网数据中心）有需求，还可以将 10-bit 分 5-bit 给 IDC，分5-bit给工作机器workerId，worker可以是进程、线程、协程等。</li>
+<li>在多个数据中心中使用相同的机器编号，由于 IDC 标识符的不同，也不会出现冲突。</li>
+<li><strong>可以采用本机IPv4地址最后两段以及进程Id一起作为机器码</strong>，确保机房内部不同机器，以及相同机器上的不同进程，拥有不同的机器码。</li>
+<li>如果要保证绝对不相同的机器码，可以通过手动设置唯一的workerID方式来实现。</li>
+</ul>
+</li>
+<li>12-bit位是自增序列，可表示2^12 &#x3D; 4096个数。</li>
+</ul>
+<h3 id="2-优缺点"><a href="#2-优缺点" class="headerlink" title="2. 优缺点"></a>2. 优缺点</h3><p>优点：</p>
+<ul>
+<li>毫秒数在高位，自增序列在低位，整个ID都是趋势递增的，后续插入数据库的索引树的时候，性能较高。</li>
+<li>生成ID时不依赖于数据库，完全在内存生成，高性能高可用。</li>
+<li>可以根据自身业务特性分配bit位，非常灵活。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>强依赖机器时钟一致性，如果机器上时钟回拨，会导致发号重复或者服务会处于不可用状态。<ul>
+<li>回拨时间小的时候，不生成 ID，循环等待到时间点到达。</li>
+<li>回拨时间过长，利用拓展位，回拨之后在拓展位上加1就可以了，这样ID依然可以保持唯一。但是这个要求我们提前预留出位数，要么从机器id中，要么从序列号中，腾出一定的位，在时间回拨的时候，这个位置 <code>+1</code>。</li>
+<li>美团针对这个提出了Leaf方案，UidGenerator是百度开源的分布式ID生成器，其基于雪花算法实现。</li>
+</ul>
+</li>
+<li>在当第三部分的机器的数量超过机房的个数限制了，导致机器码重复，同一毫秒内，两个使用相同机器ID和数据中心ID的机器可能会产生完全相同的ID，尤其是如果它们的序列号也相同。</li>
+</ul>
+<h3 id="3-相关问题"><a href="#3-相关问题" class="headerlink" title="3. 相关问题"></a>3. 相关问题</h3><ol>
+<li><p>workId 怎么保证唯一？机器号是预先分配的，那实际中机器上下线情况，这个机器开始抢占了一个，后来下线了，新上来的机器如何分配</p>
+<ul>
+<li><p>可以通过分布式缓存来保存机器ID和workId之间的映射关系。启动的时候访问分布式缓存查询当前机器ID对应的workId，如果查询不到则获取一个并保存到分布式缓存中。</p>
+</li>
+<li><p>可通过Zookeeper管理workId，免去手动频繁修改集群节点，去配置机器ID的麻烦。当新机器上线时，它可以从ZooKeeper请求一个机器号；当机器下线时，这个号可以被回收并在未来重新分配</p>
+</li>
+<li><p>如果采用静态配置方案，每个机器号都是预先分配的，即使机器下线，机器号也不会重新分配，新机器加入只能手动分配。</p>
+</li>
+</ul>
+</li>
+<li><p>雪花算法1s之内最多可以生成多少个不同的ID</p>
+<ul>
+<li>12-bit位是序列号，可以标识2^12&#x3D;4096</li>
+<li>但考虑到1秒有1000毫秒，所以一个节点在1秒内最多可以生成：4096×1000&#x3D;4,096,000</li>
+<li>考虑到10位机器标识允许多达1024个节点，所以如果每个节点都达到最大生成能力，那么系统在1秒内总共可以生成：4,096,000×1024&#x3D;4,194,304,000，越41亿</li>
+<li>在10位机器全用于标识机器，全负载情况下，约能生成越41亿ID</li>
+</ul>
+</li>
+<li><p>随机数避免一个机器上面单秒之内的订单冲突，限制是多少，支持多少位</p>
+<ul>
+<li>标准的雪花算法如上，单个节点单毫秒内超过4096个部分，必须等到下一毫秒</li>
+</ul>
+</li>
+</ol>
+<h2 id="MySQL实现"><a href="#MySQL实现" class="headerlink" title="MySQL实现"></a>MySQL实现</h2><p>MySQL通过参数<code>auto_increment_increment</code>和<code>auto_increment_offset</code>，设置主键（自增列）开始的ID值和每次递增的偏移值参数。</p>
+<p>优点：</p>
+<ul>
+<li>非常简单，利用现有数据库系统的功能实现，成本小，有DBA专业维护。</li>
+<li>ID号单调自增，可以实现一些对ID有特殊要求的业务。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>强依赖DB，当DB异常时整个系统不可用，属于致命问题。通过配置主从复制可以尽可能的增加可用性，但是数据一致性在特殊情况下难以保证，主从切换时的不一致可能会导致重复发号。</li>
+<li>ID发号性能瓶颈限制在单台MySQL的读写性能。</li>
+</ul>
+<p>为了解决MySQL的性能问题，提出如下的解决办法：通过部署多台机器，每台机器设置不同的初始值，且步长和机器数相等。保证每台机器之间生成不同的Id。</p>
+<p>但是这又带来相应问题问题：<strong>水平扩展比较困难</strong>，前面提到步长和机器数相等，在初期已经定好步长和机器数后，添加机器要麻烦的多。需要先将扩展的机器设置在之前机器生成的ID范围之后，保证生成id唯一性，然后调整之前的机器到定义的号码段，当机器数量大时，扩容十分困难。</p>
+<p>同时<strong>ID没有了单调递增</strong>的特性，只能趋势增加，每次获取ID读写数据库，数据库压力大时，只能靠堆机器来提高性能。</p>
+<h2 id="Redis实现"><a href="#Redis实现" class="headerlink" title="Redis实现"></a>Redis实现</h2><p>Redis实现分布式唯一ID主要是通过提供像 <code>INCR</code> 和 <code>INCRBY</code> 这样的自增原子命令，由于Redis自身的单线程的特点所以能保证生成的 ID 肯定是唯一有序的。</p>
+<pre class=" language-shell"><code class="language-shell">127.0.0.1:6379> set sequence_id_biz_type 1
+OK
+127.0.0.1:6379> incr sequence_id_biz_type
+(integer) 2
+127.0.0.1:6379> get sequence_id_biz_type
+"2"
+</code></pre>
+<p>当采用集群方式获取高吞吐量时，像MySQL方式一样，设置每台Redis值不同的初始值和偏移值，当时引入的成本极大。</p>
+<p>同时Redis是基于内存的，需要持久化数据，避免重启机器或者机器故障后数据丢失。Redis主要通过AOF和RDB实现持久化。</p>
+<p>优点：性能高，生成的数据有序递增</p>
+<p>缺点：引入Redis，增加系统的复杂度</p>
+<ul>
+<li>依赖于redis，需要系统引进redis，增加了系统的复杂性</li>
+<li>在单机上是递增的，但是由于涉及到分布式环境，每台机器上的时钟不可能完全同步，有时候会出现不时全局递增的情况</li>
+</ul>
+<h2 id="Leaf算法"><a href="#Leaf算法" class="headerlink" title="Leaf算法"></a>Leaf算法</h2><h3 id="Leaf-segment"><a href="#Leaf-segment" class="headerlink" title="Leaf-segment"></a>Leaf-segment</h3><p>美团在数据库生成的方案上，提出了改进，通过批量获取ID值，避免每次获取ID都读写数据库，造成数据库压力过大。</p>
+<ul>
+<li>通过维护一张表，记录不同业务的发号需求，保证每个biz-tag的ID获取相互隔离，互补影响</li>
+<li>每次根据业务中的step，获取一个segment的号段的值，用完再去数据库获取新的号段</li>
+<li>当后续业务因为性能对数据库扩容时，只需要对biz_tag分库分表即可</li>
+</ul>
+<p>优点：</p>
+<ul>
+<li>Leaf服务可以很方便的<strong>线性扩展</strong>，性能完全能够支撑大多数业务场景</li>
+<li>ID号码是趋势递增的8byte的64位数字，满足上述数据库存储的主键要求</li>
+<li>容灾性高：Leaf服务内部有号段缓存，即使DB宕机，短时间内Leaf仍能正常对外提供服务</li>
+<li>可以自定义max_id（表示该业务当前被分配的ID号段的最大值）的大小，非常方便业务从原有的ID方式上迁移过来</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>ID号码不够随机，能够泄露发号数量的信息，不太安全。</li>
+<li>TP999数据波动大，当号段使用完之后还是会hang在更新数据库的I&#x2F;O上，tg999数据会出现偶尔的尖刺。</li>
+<li>DB宕机会造成整个系统不可用。</li>
+</ul>
+<h3 id="双buffer优化"><a href="#双buffer优化" class="headerlink" title="双buffer优化"></a>双buffer优化</h3><p>前面叙述的Leaf-segment，在号段消耗完后进行取号，在这个过程中由于网络抖动、慢查询造成号段没有取到或者延迟，造成线程阻塞（无法分配新的主键ID）。</p>
+<p>采用双buffer，在Leaf服务内部用两个号段缓存区segment，当一个号段消费10%时，去另起线程更新下一个号段，当前号段全部消费完时，如果下一个segment准备好了，就直接切换过去，循环反复。</p>
+<ul>
+<li>将segment设置为服务高峰期发号QPS的600倍，即使DB宕机，也能保证一段时间内的持续发号，业务不受影响</li>
+</ul>
+<blockquote>
+<p>我理解这里两端segment是缓存在数据库之外的。</p>
+</blockquote>
+<ul>
+<li>每次请求来临，会判断下一个号段的状态，从而更新此号段，偶尔的网络抖动不会影响下个号段的更新</li>
+</ul>
+<h3 id="Leaf-snowflake"><a href="#Leaf-snowflake" class="headerlink" title="Leaf-snowflake"></a>Leaf-snowflake</h3><p>Leaf-segment生成的ID是可以计算的，不适合订单生成场景，容易被竞对计算出销量，泄露信息。</p>
+<p>接着美团提出了Leaf-snowflake方案，沿用snowflake方案的bit设计。</p>
+<p>相比传统雪花算法，采用Zookeeper持久顺序节点的特性，自动对snowflake节点配置workerID：</p>
+<ol>
+<li>启动Leaf-snowflake服务，连接Zookeeper，在leaf_forever父节点下检查自己是否已经注册过（是否有该顺序子节点）。</li>
+<li>如果有注册过直接取回自己的workerID（zk顺序节点生成的int类型ID号），启动服务。</li>
+<li>如果没有注册过，就在该父节点下面创建一个持久顺序节点，创建成功后取回顺序号当做自己的workerID号，启动服务。</li>
+</ol>
+<h3 id="弱依赖ZooKeeper"><a href="#弱依赖ZooKeeper" class="headerlink" title="弱依赖ZooKeeper"></a>弱依赖ZooKeeper</h3><p>每次去ZK获取数据后，也会在本机文件系统上缓存一个workerID文件，当ZK出现问题，恰好问题出现问题需要重启时，能保证服务正常启动，减少对ZK的依赖。</p>
+<h3 id="解决时钟问题"><a href="#解决时钟问题" class="headerlink" title="解决时钟问题"></a>解决时钟问题</h3><p>雪花算法对于时钟具有依赖性，如果机器的时钟发生了回拨，可能会生成重复的ID号，需要解决<strong>时钟回退</strong>的问题。</p>
+<ul>
+<li>首先通过ZK检查是否写过节点</li>
+<li>如果写过，通过当前的自身系统时间与之前的周期性上传的时间对比，如果小于说明发生了大步长回拨，服务启动失败并报警</li>
+<li>如果没有写过说明是一个新服务节点，直接创建持久节点，写入自身系统时间。</li>
+<li>接着对比其他Leaf节点的系统时间，来判断自身系统时间是否正确，获取到所有临时节点的系统的系统时间，计算出平均时间，如果系统时间与平均值的差值小于阈值，说明是正常的，否则认为发生了大步长偏移，启动失败报警</li>
+<li>每隔一段时间(3s)上报自身系统时间写入leaf_forever</li>
+</ul>
+<blockquote>
+<p>ZK中包含了leaf_forever和leaf_temporary的两种节点。</p>
+<ul>
+<li>leaf_forever是ZK创建的普通节点，不会受到客户端会话的影响，除非主动删除或者ZK集群崩溃，节点一直存在。这些节点通常用于存储持久性的配置信息、元数据或其他长期存在的数据。</li>
+<li>leaf_temporary是临时节点，其生命周期与创建该节点的客户端会话相关联。如果会话结束（比如客户端崩溃或关闭连接），临时节点会被自动删除。这些节点通常用于表示短期状态、临时任务或服务实例的存在。比如，服务实例启动时可以创建临时节点，退出时会自动删除该节点。</li>
+</ul>
+</blockquote>
+<p>美团也提出由于雪花算法对时钟强依赖性，对时间的要求比较敏感，在机器工作时NTP同步（计算机网络时间同步）也会造成秒级别的回退，建议可以直接关闭NTP同步。要么在时钟回拨的时候直接不提供服务直接返回ERROR_CODE，等时钟追上即可。<strong>或者做一层重试，然后上报报警系统，更或者是发现有时钟回拨之后自动摘除本身节点并报警</strong>。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>UUID：</p>
+<ul>
+<li>通过机器网卡、当地时间、随机数方式生成，本地生成。可以通过当前的时间戳及机器 mac 地址来生成，可以确保生成的 UUID 全球唯一</li>
+<li>生成的位数多，不易于存储</li>
+<li>生成的ID是无序字符串，查询效率低下，没有实际业务含义</li>
+</ul>
+<p>雪花算法：</p>
+<ul>
+<li>对于时钟具有强依赖性，有时间回拨缺点。</li>
+<li>可以通过其他为划分，当发生时间回拨时，启动额外的位，避免ID重复</li>
+<li>对于小尺度，可以通过等待时间正常</li>
+<li>或者是抛出异常，退出</li>
+</ul>
+<p>MySQL生成：</p>
+<ul>
+<li>每次都需要读写数据库，性能差</li>
+<li>通过多机部署方式，设置不同的初始值和偏移量，但是水平难以扩展</li>
+</ul>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2023/09/03/1-wsl+golang/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2024-01-14 17:09:30
+            </span>
+            
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2023/10/08/8-Bitcask-1/" target="_self">
+                <span>Next</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#UUID"><span class="toc-text">UUID</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%AA%E8%8A%B1%E7%AE%97%E6%B3%95"><span class="toc-text">雪花算法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%BB%84%E6%88%90"><span class="toc-text">1. 组成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-text">2. 优缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98"><span class="toc-text">3. 相关问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MySQL%E5%AE%9E%E7%8E%B0"><span class="toc-text">MySQL实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis%E5%AE%9E%E7%8E%B0"><span class="toc-text">Redis实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Leaf%E7%AE%97%E6%B3%95"><span class="toc-text">Leaf算法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Leaf-segment"><span class="toc-text">Leaf-segment</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8Cbuffer%E4%BC%98%E5%8C%96"><span class="toc-text">双buffer优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Leaf-snowflake"><span class="toc-text">Leaf-snowflake</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%B1%E4%BE%9D%E8%B5%96ZooKeeper"><span class="toc-text">弱依赖ZooKeeper</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%97%B6%E9%92%9F%E9%97%AE%E9%A2%98"><span class="toc-text">解决时钟问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/shixiaocaia">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/shixiaocaia">Copyright © 2024 shixiaocaia</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="Search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>First search, index file loading, please wait...<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>No result<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The search.xml file was not found, please refer to：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The request failed, Try to refresh the page or try again later.<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+
+      </div>
+    </div>
+  </body>
+</html>

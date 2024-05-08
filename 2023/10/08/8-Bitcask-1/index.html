@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="shixiaocaia" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      Bitcask | 实现细节 
+      
+      
+      |
+    
+     shixiaocaia
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.ico">
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="shixiaocaia" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism.css" type="text/css"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.jpg" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">shixiaocaia</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">Bitcask | 实现细节</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2024-01-14 17:09:30
+        </span>
+        
+      </div>
+      <div class="markdown-body">
+        <h2 id="数据库启动流程"><a href="#数据库启动流程" class="headerlink" title="数据库启动流程"></a>数据库启动流程</h2><p>基于Bitcask论文实现的存储引擎实例，本质上是在本地当中维护一个文件夹，这其中包含了.data结尾的数据文件，merge完成的Hint文件，文件锁文件等。</p>
+<h3 id="参数校验"><a href="#参数校验" class="headerlink" title="参数校验"></a>参数校验</h3><p>启动Bitcask时做参数校验应该考虑：</p>
+<ul>
+<li>当前目录是否存在，是否为一个新的实例</li>
+<li>对于DataFile、MergeRatio的参数合法性校验</li>
+</ul>
+<h3 id="文件锁"><a href="#文件锁" class="headerlink" title="文件锁"></a>文件锁</h3><p>在原文当中Bitcask提出可由多个进程同时读，但是只能由一个进程写，在实际实现中为了避免并发问题，只允许一个进程进行读写操作，相当于只允许打开一个服务端。</p>
+<p>通过系统调用flock提供的文件锁，保证多个进程之间的互斥，在启动数据库时，通过判断是否能够获取对应文件锁，来保证单个进程运行数据库。</p>
+<h3 id="初始化DB实例"><a href="#初始化DB实例" class="headerlink" title="初始化DB实例"></a>初始化DB实例</h3><p>主要包含了以下参数：</p>
+<ul>
+<li>配置参数</li>
+<li>读写锁</li>
+<li>旧的文件（只读，不写入）</li>
+<li>索引</li>
+<li>是否初始化</li>
+<li>文件锁</li>
+</ul>
+<h3 id="加载merge文件"><a href="#加载merge文件" class="headerlink" title="加载merge文件"></a>加载merge文件</h3><p>merge后的文件目录存放在父级目录同名之下的文件夹当中，如果不存在说明没有发生过合并。</p>
+<p>如果存在merge目录，遍历目录下的文件，判断是否存在mergeFinished文件，来判断merge操作是否有效，mergeFinished文件中存放了完成merge的文件序列号，未完成merge的部分后续需要手动加载索引信息。</p>
+<p>在判断merge有效性后，删除旧文件，移动新文件到目录当中覆盖，最后删除merge目录。</p>
+<h3 id="加载数据文件"><a href="#加载数据文件" class="headerlink" title="加载数据文件"></a>加载数据文件</h3><p>因为内存中维护的是key-value的数据信息在磁盘中的位置，这里需要提前加载好数据文件，每次打开数据库都需要重新构造索引信息，查询时先从内存中找到位置信息，再从文件中读取。</p>
+<p>在本项目中将.data后缀的文件作为数据文件，并且这里根据文件名排序，实现有序数据文件，便于后续有序加载索引（记录是追加写入到磁盘中的文件的，相同Key的记录，后加载应该是最新的有效数据，用来更新已经加载的数据）。</p>
+<p>在加载数据文件时，加载文件的名，作为后续olderFiles的编号。</p>
+<p>加载到最后一个文件，是当前实例的活跃文件，所有新增或者删除记录都是追加写入到活跃文件当中的，其他文件作为olderFile只用于读。</p>
+<h3 id="加载索引"><a href="#加载索引" class="headerlink" title="加载索引"></a>加载索引</h3><p>在磁盘中当中只保存了数据文件，每次打开数据库是需要重新加载索引信息到内存当中的。当然如果此时发生了merge操作，merge操作完会生成所有有效信息的一个Hint索引文件，未merge的数据文件还需要手动构造加载索引信息。</p>
+<p>读取数据文件中的每一条记录，进行解码得到信息，构造Value信息：</p>
+<ul>
+<li>解析记录的末尾序列号，如果是nonTransactionSeqNo说明是普通记录，可以更新</li>
+<li>如果是事务ID，暂存记录到内存中，直到读取到事务ID结束的记录，加载这些记录到内存当中</li>
+<li>记录最新的事务序列号，加载到DB实例当中，保证后续全局唯一</li>
+<li>注意最后一个文件的末尾信息offset，作为活跃文件当前文件写入位置信息writeoff需要记录</li>
+</ul>
+<p>在解析完Key后，如果是普通索引，或者完整事务记录信息，更新内存索引，Key：key，Value：Fid + Offset + size。</p>
+<p>如果序列号是事务序列号，需要判断是否完成，完成统一加载索引信息，否则丢弃。</p>
+<p>其中B+树索引，使用了开源的BBlot，索引信息实际上是维护一个DB实例。每次加载数据库时，索引信息不需要通过数据文件加载，直接打开DB实例即可。由于没有读取数据文件，最新的事务序列号要通过一个seqNoFile文件进行获取，同时为了后续追加写入读取完后删除，在关闭数据库时写入一条记录到seqNoFile文件当中。</p>
+<h2 id="索引结构设计"><a href="#索引结构设计" class="headerlink" title="索引结构设计"></a>索引结构设计</h2><p>在内存当中，我们需要一种支持高效插入、读取、删除数据的结构，并且如果需要数据高效遍历的话，我们最好是选择天然支持有序的一种结构。常见的选择有BTree、跳表、红黑树等。</p>
+<p>在设计内存索引结构时，考虑到实际场景需要实现不同的内存索引结构，设计了抽象的内存索引接口：</p>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">type</span> Indexer <span class="token keyword">interface</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// Put 向索引结构中存储 key 对应的数据位置信息</span>
+    <span class="token function">Put</span><span class="token punctuation">(</span>key <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> pos <span class="token operator">*</span>data<span class="token punctuation">.</span>LogRecordPos<span class="token punctuation">)</span> <span class="token operator">*</span>data<span class="token punctuation">.</span>LogRecordPos
+
+    <span class="token comment" spellcheck="true">// Get 从索引结构中获取 key 对应的数据位置信息</span>
+    <span class="token function">Get</span><span class="token punctuation">(</span>key <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token operator">*</span>data<span class="token punctuation">.</span>LogRecordPos
+
+    <span class="token comment" spellcheck="true">// Delete 从索引结构中删除 key 对应的数据位置信息</span>
+    <span class="token function">Delete</span><span class="token punctuation">(</span>key <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token operator">*</span>data<span class="token punctuation">.</span>LogRecordPos<span class="token punctuation">,</span> <span class="token builtin">bool</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// Size 索引中数据量</span>
+    <span class="token function">Size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">int</span>
+
+    <span class="token comment" spellcheck="true">// Iterator 获取索引结构的迭代器</span>
+    <span class="token function">Iterator</span><span class="token punctuation">(</span>reverse <span class="token builtin">bool</span><span class="token punctuation">)</span> Iterator
+
+    <span class="token comment" spellcheck="true">// Close 关闭索引</span>
+    <span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">error</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+</code></pre>
+<p>在本项目中，主要结合Bitcask论文实现存储引擎实例，索引部分设计不是重点，主要利用现有的索引实现相应的功能。主要采用了三种索引结构，BTree，ARTree以及B+Tree。</p>
+<h3 id="BTree"><a href="#BTree" class="headerlink" title="BTree"></a>BTree</h3><p>在一开始中只是先使用<a target="_blank" rel="noopener" href="https://github.com/google/btree">BTree</a>实现了，BTree是一种常用的多叉树数据结构，主要用于管理大量数据并允许高效的插入、删除和搜索操作。具有以下特点：</p>
+<ul>
+<li><strong>多叉树结构</strong>：B树是一种多叉树，每个节点可以拥有多个子节点，通常用于处理大量数据，减少树的高度。</li>
+<li><strong>平衡性</strong>：B树是一种自平衡树，保持平衡是其重要特征，通过旋转和分裂等操作保持树的平衡，确保操作的时间复杂度稳定。</li>
+<li><strong>有序存储</strong>：B树节点中的元素是有序存储的，使得在节点内部可以进行快速查找。</li>
+</ul>
+<h3 id="ARTree"><a href="#ARTree" class="headerlink" title="ARTree"></a>ARTree</h3><p>ARTree是自适应基树，可以看成是一个前缀树的优化版本，如果子节点只有一个值，则会和父节点进行合并，减少空间占用。实际中使用了封装<a target="_blank" rel="noopener" href="https://github.com/plar/go-adaptive-radix-tree">go-adaptive</a>实现ART索引结构。</p>
+<p>ARTree节点有多个类型，比如Node4，Node16。对于Node4：使用一个长度为4的数组来存储子节点的键，另外一个长度为4的数组来存储指向子节点的指针。</p>
+<p>随着键的插入和删除，节点可能需要进行升级或降级以匹配子节点的数量。通过动态调整子节点的大小，实现空间的高效利用和查询性能优化。</p>
+<h3 id="B-Tree"><a href="#B-Tree" class="headerlink" title="B+Tree"></a>B+Tree</h3><p>从 bitcask 论文中可以得知，Bitcask存储模型的最大特点是所有的索引都只能在内存中维护，这样的特性带来了一个好处，维护在内存中的索引信息<strong>一次磁盘 IO 操作就可以拿到数据</strong>了。同时也限制了存储引擎能维护多少索引，完全取决于内存容量。</p>
+<p>针对这个问题可以考虑<strong>将索引信息维护到磁盘当中</strong>，牺牲一定的读写性能，节省内存空间。</p>
+<p>对于go语言通过使用<a target="_blank" rel="noopener" href="https://crates.io/crates/jammdb">boltdb</a>这个库，其实现了标准的B+树。在学习MySQL时了解InnoDB存储引擎下的数据结构是B+Tree，其是一个磁盘IO友好型的数据结构。在相同数据量下，树的高度更低，这意味着需要较少次数的IO。并且在叶子节点之间通过链表连接，可以实现双先遍历，支持范围查询。</p>
+<blockquote>
+<p>如果DB使用B+树索引，不会从数据文件中加载索引，那么对于WriteBatch有一定的影响，无法获取最新的事务序列号。</p>
+<p>可以考虑加载数据文件获取最新序列号，或者直接禁用WriteBatch，或者数据库Close时候，最新的序列号记录到一个文件当中，启动时从文件中获取。</p>
+<p>但是在数据库异常情况下没有正常Close，会导致序列号没有正常写入，因此实际中可以考虑禁用WriteBatch功能。</p>
+</blockquote>
+<h3 id="索引迭代器设计"><a href="#索引迭代器设计" class="headerlink" title="索引迭代器设计"></a>索引迭代器设计</h3><p>考虑到不同的索引结构，将索引迭代器设计成一个通用的接口，方便不同的索引接口实现迭代器。</p>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">type</span> Iterator <span class="token keyword">interface</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token function">Rewind</span><span class="token punctuation">(</span><span class="token punctuation">)</span>                   <span class="token comment" spellcheck="true">// 重新回到迭代器的起点</span>
+    <span class="token function">Seek</span><span class="token punctuation">(</span>key <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span>           <span class="token comment" spellcheck="true">// 从索引结构中查找 key, 从这个位置开始遍历</span>
+    <span class="token function">Next</span><span class="token punctuation">(</span><span class="token punctuation">)</span>                     <span class="token comment" spellcheck="true">// 跳转下一个Key</span>
+    <span class="token function">Valid</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">bool</span>               <span class="token comment" spellcheck="true">// 是否有效，即是否已经遍历完了所有的 key，用于退出遍历</span>
+    <span class="token function">Key</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span>               <span class="token comment" spellcheck="true">// 获取当前 key</span>
+    <span class="token function">Value</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span>data<span class="token punctuation">.</span>LogRecordPos <span class="token comment" spellcheck="true">// 获取当前 key 对应的数据位置信息</span>
+    <span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>                    <span class="token comment" spellcheck="true">// 关闭迭代器</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+</code></pre>
+<p>对于B树来说，通过将当前的所有值拷贝到一个value数组中，通过遍历下标方式获取指定的值。</p>
+<h3 id="索引锁粒度优化"><a href="#索引锁粒度优化" class="headerlink" title="索引锁粒度优化"></a>索引锁粒度优化</h3><p>在之前的设计中，内存中只有一个索引的结构，所有的写入和读取都会竞争这个索引数据结构的锁，在高并发的场景下，这可能会是一个性能瓶颈。</p>
+<p>我们可以将这个锁的粒度减小，使用多个索引结构，然后将 key 通过 hash 取模映射到不同的索引数据结构中。</p>
+<p>这样一来，只有映射到相同索引之中的 key 才会竞争同一把锁，这避免了去维护一个全局索引锁，大大减少了锁的粒度，并发性能能够得到提升。</p>
+<h2 id="数据清理"><a href="#数据清理" class="headerlink" title="数据清理"></a>数据清理</h2><p>在这之前我们提到了，数据写入和删除都是写入一条数据记录，当删除一条记录时写入一条墓碑记录到数据文件，再更新内存索引，在这之前的记录也就无效了；在使用watchbatch批量写入时，当写入中途失败时（数据库崩溃），导致记录无效，这些无效数据会占用一定的无效空间。</p>
+<p>因此在Bitcask论文中，考虑通过merge操作，将有效的数据进行重写，同时可以生成针对有效数据的索引信息，在启动数据库时直接加载，而不需要重复构造，有利于在数据库崩溃时快速加载，采用和写入数据文件一样的方式，不过存储的value信息，是key所在的磁盘位置信息，Fid，Offset，Size信息。</p>
+<p>为了避免进行merge操作时，导致正常业务的阻塞，通过将数据文件拷贝到另一个文件夹中，进行操作，不影响业务正常的运行：</p>
+<ul>
+<li>当前活跃文件转为olderFile，并打开新的文件作为activeFile写入</li>
+<li>将olderFile直接拷贝到其他文件夹中（merge后缀标记）</li>
+<li>注意检查当前磁盘空间是否够完成merge操作，是否达到merge的上限阈值</li>
+<li>完成文件拷贝后，可以释放锁，此时备份库和正在运行的库不存在冲突问题</li>
+<li>新建一个Bitcask实例，以及一个Hint文件存放有效记录的索引信息</li>
+<li>读取mergeFile每一条记录，对比索引内的信息，如果一致说明有效，清除事务标记，写入到Hint文件中</li>
+<li>持久化后，写表示mergeFinishFile的文件，并且写入未完成merge的文件id</li>
+</ul>
+<h2 id="数据读写操作"><a href="#数据读写操作" class="headerlink" title="数据读写操作"></a>数据读写操作</h2><h3 id="数据记录的格式"><a href="#数据记录的格式" class="headerlink" title="数据记录的格式"></a>数据记录的格式</h3><p><img src="/../images/bitcask-5.png" alt="86fa8ea438b97ab9e369852c9b409555e34e23cdc0ef4978004a9a65918ab710"></p>
+<p>一条数据记录主要包括了以下几个字段：</p>
+<ul>
+<li><p>CRC占用4个字节，用于校验记录的有效性</p>
+</li>
+<li><p>Type占用1个字节，用来表示记录的类型</p>
+</li>
+<li><p>KeySize、ValueSize使用变长（最大5个字节），表示后面Key和Value的长度</p>
+</li>
+<li><p>以上作为LogRecord的Header部分，Header是固定长度的，读取一条记录时先读取header部分，解析后多余的字节会忽略，反序列号后得到KeySize和ValueSize的信息</p>
+</li>
+<li><p>Key&#x2F;Value部分也是变长的</p>
+</li>
+</ul>
+<blockquote>
+<p>通过将字段设计为变长，节省了存储空间。如果keysize是u32类型，不使用变长，将固定占据4字节，有的时候key长度很小，例如长度为5，只需要1个字节存储。</p>
+</blockquote>
+<h3 id="写入记录"><a href="#写入记录" class="headerlink" title="写入记录"></a>写入记录</h3><p>在写入一条记录之前，对Key进一步编码，在前缀增加一个Seq，表示是普通记录，还是事务记录。在merge完成时会去除事务序列号。加载到内存中时加载时realKey。</p>
+<ul>
+<li>使用1个字节存储Type</li>
+<li>然后使用变长字段记录KeySize和ValueSize</li>
+<li>将编码后的header拷贝到数组当中，然后拷贝key和value</li>
+<li>最后做一个crc校验，插入到头部</li>
+</ul>
+<p>写入一条记录时先写入Type，计算Key，Value的大小写入，再写入Key，Value，最后做一个CRC校验，写入记录的头部。</p>
+<h3 id="读取记录"><a href="#读取记录" class="headerlink" title="读取记录"></a>读取记录</h3><ul>
+<li>拿到Header后，如果判断keySize和ValueSize均为0，则说明读取到了文件末尾，返回一个EOF错误</li>
+<li>根据Offset + KeySize和ValueSize的总和，读取一个字节数组，包含了Key&#x2F;Value的信息</li>
+<li>再根据crc以后的几个字段，计算出crc值，对比header中的crc值进行校验</li>
+</ul>
+<p>读取一条记录时，先读取头部信息，判断keySize和ValueSize是否有效，为0说明读取到了文件末尾，返回一个EOF错误；否则根据Header中的Size信息，读取Key和value信息；最后计算读取的header中除了crc字段，加上key，value计算得出的crc值，与记录中的crc值是否一直，避免记录被破坏。</p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2023/09/12/6-%E5%88%86%E5%B8%83%E5%BC%8FID/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2024-01-14 17:09:30
+            </span>
+            
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2023/10/20/13-Docker/" target="_self">
+                <span>Next</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B"><span class="toc-text">数据库启动流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E6%A0%A1%E9%AA%8C"><span class="toc-text">参数校验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E9%94%81"><span class="toc-text">文件锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96DB%E5%AE%9E%E4%BE%8B"><span class="toc-text">初始化DB实例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A0%E8%BD%BDmerge%E6%96%87%E4%BB%B6"><span class="toc-text">加载merge文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A0%E8%BD%BD%E6%95%B0%E6%8D%AE%E6%96%87%E4%BB%B6"><span class="toc-text">加载数据文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A0%E8%BD%BD%E7%B4%A2%E5%BC%95"><span class="toc-text">加载索引</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95%E7%BB%93%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="toc-text">索引结构设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#BTree"><span class="toc-text">BTree</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ARTree"><span class="toc-text">ARTree</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#B-Tree"><span class="toc-text">B+Tree</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95%E8%BF%AD%E4%BB%A3%E5%99%A8%E8%AE%BE%E8%AE%A1"><span class="toc-text">索引迭代器设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95%E9%94%81%E7%B2%92%E5%BA%A6%E4%BC%98%E5%8C%96"><span class="toc-text">索引锁粒度优化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%B8%85%E7%90%86"><span class="toc-text">数据清理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E8%AF%BB%E5%86%99%E6%93%8D%E4%BD%9C"><span class="toc-text">数据读写操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E8%AE%B0%E5%BD%95%E7%9A%84%E6%A0%BC%E5%BC%8F"><span class="toc-text">数据记录的格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%99%E5%85%A5%E8%AE%B0%E5%BD%95"><span class="toc-text">写入记录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E5%8F%96%E8%AE%B0%E5%BD%95"><span class="toc-text">读取记录</span></a></li></ol></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/shixiaocaia">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/shixiaocaia">Copyright © 2024 shixiaocaia</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="Search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>First search, index file loading, please wait...<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>No result<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The search.xml file was not found, please refer to：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The request failed, Try to refresh the page or try again later.<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+
+      </div>
+    </div>
+  </body>
+</html>

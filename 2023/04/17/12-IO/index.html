@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="shixiaocaia" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      操作系统 | IO多路复用 
+      
+      
+      |
+    
+     shixiaocaia
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.ico">
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="shixiaocaia" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism.css" type="text/css"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.jpg" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">shixiaocaia</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">操作系统 | IO多路复用</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2024-05-07 16:39:31
+        </span>
+        
+      </div>
+      <div class="markdown-body">
+        <h2 id="最基本的Socket模型"><a href="#最基本的Socket模型" class="headerlink" title="最基本的Socket模型"></a>最基本的Socket模型</h2><p>Socket模型相比管道、共享内存、信号量等方式，实现了跨主机进程之间的通信，但是他是<strong>阻塞IO模型</strong>，基本上只能一对一通信，当发生读写阻塞时，会导致其他客户端请求无法处理，无法建立新的连接。</p>
+<h2 id="传统方式"><a href="#传统方式" class="headerlink" title="传统方式"></a>传统方式</h2><p>传统方式每一个客户端连接，就分配一个进程或者线程，通过多线程、多进程方式实现一对多的通信。</p>
+<h3 id="多进程模型"><a href="#多进程模型" class="headerlink" title="多进程模型"></a>多进程模型</h3><p>主要思路如下：</p>
+<ul>
+<li>服务器主线程负责监听客户端连接，建立连接后accept函数返回一个已连接的socket</li>
+<li>同时fork出一个子进程，子进程复制了父进程相关的资源，通过父进程的文件描述符实现了与客户端通信</li>
+</ul>
+<p>在子进程退出时，需要做好回收工作，否则变成<strong>僵尸进程</strong>，会占用系统资源。</p>
+<blockquote>
+<p>僵尸进程：子进程先于父进程结束时，子进程的退出状态信息会被保留，但其父进程没有及时对其进行处理，导致子进程变为僵尸进程。僵尸进程不再执行任何代码，但其占用系统资源，如进程表中的一个记录。</p>
+</blockquote>
+<p>随着客户端数量增多，每产生一个进程会占用一定的系统资源，并且进程间的上下文成本很高，性能会收到影响。因此多进程模型并不合适。</p>
+<h3 id="多线程模型"><a href="#多线程模型" class="headerlink" title="多线程模型"></a>多线程模型</h3><p>多进程的上下文切换成本很高，可以联想到多线程模型。同进程里的线程可以共享进程的部分资源，比如文件描述符列表、进程空间、代码、全局数据、堆、共享库等，这些共享些资源在上下文切换时不需要切换，而只需要切换线程的私有数据、寄存器等不共享的数据。</p>
+<p>主要思路如下：</p>
+<ul>
+<li>主线程负责监听客户端连接，当完成客户端TCP连接后，创建线程，传递已连接的socket的文件描述符给线程函数</li>
+<li>在线程里完成与客户端的通信，达到并发处理</li>
+</ul>
+<p>每次连接来创建一个线程，结束后在销毁，创建和销毁的成本较高，由此引入了<strong>线程池</strong>概念，提前创建若干个线程，通过复用线程减少性能损失。由于队列是全局的，为了避免多线程竞争，线程在操作时需要加锁。</p>
+<p>但是实际中在高并发场景下，维护1万个进程或者线程，操作系统都是无法扛得住的。由此引入了I&#x2F;O多路复用技术。</p>
+<h2 id="I-O多路复用"><a href="#I-O多路复用" class="headerlink" title="I&#x2F;O多路复用"></a>I&#x2F;O多路复用</h2><p>通过一个进程维护多个socket通信。每个进程控制每个请求处理耗时，并发处理多个请求，实现一个时分多路复用，类似一个CPU并发处理多个进程。</p>
+<p>总体思路：将所有已经建立的连接（文件描述符）传递给内核，再由内核返回产生事件的连接，最终在用户态处理连接对应的请求。</p>
+<h3 id="select"><a href="#select" class="headerlink" title="select"></a>select</h3><p>大致思路如下：</p>
+<ul>
+<li>将已连接的 Socket 都放到一个<strong>文件描述符集合</strong>，然后调用 select 函数将文件描述符集合<strong>拷贝</strong>到内核里，让内核通过<strong>遍历集合</strong>是否有网络事件产生，将对应产生事件的socket标为可读或者可写</li>
+<li>再将文件描述符拷回用户态，用户态经过<strong>遍历集合</strong>找到可读或者可写的socket</li>
+</ul>
+<p>select使用固定长度的bitmap表示文件描述符集合，个数受限。在 Linux 系统中，由内核中的 FD_SETSIZE 限制， 默认最大值为 <code>1024</code>，只能监听 0~1023 的文件描述符。</p>
+<h3 id="poll"><a href="#poll" class="headerlink" title="poll"></a>poll</h3><p>poll改进了select方式，使用动态数组存储文件描述符集合。但是仍然需要两次用户态和内核态之间拷贝，通过遍历方式检查可读可写。</p>
+<h3 id="epoll"><a href="#epoll" class="headerlink" title="epoll"></a>epoll</h3><p>epoll通过两种方式，解决了select&#x2F;poll问题：</p>
+<ul>
+<li>epoll 在内核里使用<strong>红黑树</strong>来跟踪进程所有待检测的文件描述字，可以用来保存待检测的socket，不需要重复拷贝</li>
+<li>epoll 使用<strong>事件驱动</strong>的机制，内核里维护了一个<strong>链表来记录就绪事件</strong>，当某个 socket 有事件发生时，通过<strong>回调函数</strong>内核会将其加入到这个就绪事件列表中，通过epoll_wait获取返回有事件的文件描述符个数，避免轮询查找事件。</li>
+</ul>
+<p>此外epoll相比select、poll还支持了边缘触发方式，默认这三种都是选择水平触发方式。</p>
+<blockquote>
+<p><strong>水平触发</strong>：当被监控的 Socket 上有可读事件发生时，服务器端不断地从 epoll_wait 中苏醒，直到内核缓冲区数据被 read 函数读完才结束，目的是告诉我们有数据需要读取。</p>
+<p><strong>边缘触发</strong>：当被监控的 Socket 描述符上有可读事件发生时，<strong>服务器端只会从 epoll_wait 中苏醒一次</strong>，即使没有被读取，也不会重复唤醒，所以要尽可能保证一次性读取完。</p>
+</blockquote>
+<p>通过边缘触发方式，可以减少epoll_wait调用的方式，减少开销（上下文切换），一般为了避免由于实际文件描述符是阻塞的，没有可以读写造成进程阻塞，边缘触发一般搭配非阻塞I&#x2F;O使用。</p>
+<blockquote>
+<p>实际I&#x2F;O多路复用一般最好搭配非阻塞I&#x2F;O使用，因为多路复用 API 返回的事件并不一定可读写的，如果使用阻塞 I&#x2F;O， 那么在调用 read&#x2F;write 时则会发生程序阻塞。</p>
+</blockquote>
+<blockquote>
+<p>后话，如果放到现在再去看去年webserver的内容，可能理解又不一样了。</p>
+</blockquote>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2023/04/15/11-%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2024-05-07 16:39:31
+            </span>
+            
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2023/05/03/2-ngnix/" target="_self">
+                <span>Next</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%9F%BA%E6%9C%AC%E7%9A%84Socket%E6%A8%A1%E5%9E%8B"><span class="toc-text">最基本的Socket模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%A0%E7%BB%9F%E6%96%B9%E5%BC%8F"><span class="toc-text">传统方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E8%BF%9B%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="toc-text">多进程模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="toc-text">多线程模型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#I-O%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8"><span class="toc-text">I&#x2F;O多路复用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#select"><span class="toc-text">select</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#poll"><span class="toc-text">poll</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#epoll"><span class="toc-text">epoll</span></a></li></ol></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/shixiaocaia">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/shixiaocaia">Copyright © 2024 shixiaocaia</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="Search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>First search, index file loading, please wait...<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>No result<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The search.xml file was not found, please refer to：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The request failed, Try to refresh the page or try again later.<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+
+      </div>
+    </div>
+  </body>
+</html>

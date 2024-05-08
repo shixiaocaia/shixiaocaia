@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="shixiaocaia" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      WSL中配置golang环境 
+      
+      
+      |
+    
+     shixiaocaia
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.ico">
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="shixiaocaia" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism.css" type="text/css"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.jpg" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">shixiaocaia</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">WSL中配置golang环境</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2024-01-14 17:09:30
+        </span>
+        
+      </div>
+      <div class="markdown-body">
+        <h2 id="配置WSL"><a href="#配置WSL" class="headerlink" title="配置WSL"></a>配置WSL</h2><blockquote>
+<p>参考文章：<a target="_blank" rel="noopener" href="https://deepinout.com/wsl-tutorials/wsl-install-and-quick-start.html">WSL安装</a></p>
+</blockquote>
+<h3 id="切换root用户"><a href="#切换root用户" class="headerlink" title="切换root用户"></a>切换root用户</h3><pre class=" language-shell"><code class="language-shell">sudo passwd root
+su
+</code></pre>
+<h3 id="限制Vmmem内存"><a href="#限制Vmmem内存" class="headerlink" title="限制Vmmem内存"></a>限制Vmmem内存</h3><ol>
+<li><p>按下<code>Windows + R</code>键，输入<code>%UserProfile%</code>并运行进入用户文件夹</p>
+</li>
+<li><p>新建文件<code>.wslconfig</code>，然后记事本编辑</p>
+</li>
+<li><p>填入以下内容并保存, memory为系统内存上限，这里我限制最大2GB，可根据自身电脑配置设置</p>
+</li>
+</ol>
+<pre class=" language-shell"><code class="language-shell">[wsl2]
+memory=4GB
+swap=8GB
+localhostForwarding=true
+</code></pre>
+<ol start="4">
+<li>输入<code>wsl --shutdown</code>来关闭当前的子系统，重启wsl</li>
+</ol>
+<h3 id="使用docker"><a href="#使用docker" class="headerlink" title="使用docker"></a>使用docker</h3><pre class=" language-shell"><code class="language-shell"> curl -fsSL https://test.docker.com -o test-docker.sh
+ sudo sh test-docker.sh
+ 
+ # 验证docker是否安装成功
+ systemctl status docker
+</code></pre>
+<pre class=" language-shell"><code class="language-shell"># 启动docker
+systemctl start docker
+
+# 查看当前的容器
+
+docker ps -a
+
+# 启动容器
+docker  start 容器名或者容器id
+
+# 停止容器
+docker  stop 容器名或容器id
+
+
+# 强制关闭容器
+docker container kill 容器名或容器id
+# 或可简写为
+docker kill 容器名或容器id
+</code></pre>
+<pre class=" language-shell"><code class="language-shell">docker ps
+
+docker exec -it d498d9f00612 /bin/bash
+
+select  host, user, authentication_string, plugin from mysql.user;
+
+use mysql
+
+update user set host = '%' where user = 'root';
+alter user 'root'@'%' identified with mysql_native_password by 'shixiaocaia';
+
+FLUSH PRIVILEGES;
+</code></pre>
+<h3 id="配置Git"><a href="#配置Git" class="headerlink" title="配置Git"></a>配置Git</h3><pre class=" language-shell"><code class="language-shell">sudo apt update
+sudo apt install git
+
+git --version
+git version 1.8.1.2
+</code></pre>
+<pre class=" language-shell"><code class="language-shell"># 配置用户信息
+git config --global user.name "shixiaocaia"​
+git config --global user.email shixiaocaia@gmail.com​
+git config --list
+
+# 配置SSH
+ssh-keygen -t rsa -C "这里换上你的邮箱"
+# 不需要密码，直接三次回车
+# 生成id_rsa和id_rsa.pub
+# 添加公钥pub文件内容，到Settings -- SSH and GPG keys​
+cat ~/.ssh/id_rsa.pub
+# 测试配置成功
+ssh -T git@github.com
+</code></pre>
+<h3 id="启动目录"><a href="#启动目录" class="headerlink" title="启动目录"></a>启动目录</h3><ul>
+<li>打开中终端设置，搜索wsl</li>
+</ul>
+<pre class=" language-shell"><code class="language-shell">&#123;
+    "guid": "&#123;72130475-4d4b-5774-bc1a-2a09ff7f0056&#125;",
+    "hidden": false,
+    "name": "Ubuntu2204",
+    "source": "Windows.Terminal.Wsl",
+    "startingDirectory": "//wsl$/Ubuntu2204/home/xiaocai"
+&#125;
+</code></pre>
+<ul>
+<li>如果是其他终端工具，设置工作目录<code>//wsl$/Ubuntu2204/home/xiaocai</code></li>
+</ul>
+<h2 id="自动安装"><a href="#自动安装" class="headerlink" title="自动安装"></a>自动安装</h2><pre class=" language-shell"><code class="language-shell">sudo apt install golang-go
+apt remove golang-go
+</code></pre>
+<p>用这样的办法自动安装的golang并非最新版</p>
+<h2 id="手动安装"><a href="#手动安装" class="headerlink" title="手动安装"></a>手动安装</h2><ol>
+<li>查看<a target="_blank" rel="noopener" href="https://golang.google.cn/dl/">google发布的golang版本</a>，选择合适的版本安装。</li>
+</ol>
+<pre class=" language-shell"><code class="language-shell">wget https://studygolang.com/dl/golang/go1.20.5.linux-amd64.tar.gz
+</code></pre>
+<ol start="2">
+<li>解压到<code>/usr/local</code></li>
+</ol>
+<pre class=" language-shell"><code class="language-shell">tar -C /usr/local -xzf go1.20.5.linux-amd64.tar.gz
+</code></pre>
+<ol start="3">
+<li>设置环境变量</li>
+</ol>
+<pre class=" language-shell"><code class="language-shell">vim /etc/profile
+</code></pre>
+<pre class=" language-shell"><code class="language-shell">export GOPATH=/home/xiaocai/go
+export GOROOT=/usr/local/go
+export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+</code></pre>
+<pre class=" language-shell"><code class="language-shell">source /etc/profile
+</code></pre>
+<ol start="4">
+<li>其他设置</li>
+</ol>
+<pre class=" language-shell"><code class="language-shell"># 配置代理
+go env  -w GOPROXY=https://goproxy.cn,https://goproxy.io,direct
+
+# Go Moudle
+go env -w GO111MODULE=on
+</code></pre>
+<ol start="5">
+<li>查看环境是否安装成功</li>
+</ol>
+<pre class=" language-shell"><code class="language-shell">go env
+go version
+</code></pre>
+<h2 id="golang配置"><a href="#golang配置" class="headerlink" title="golang配置"></a>golang配置</h2><p><img src="/../images/go1.png" alt="20230907102715106"></p>
+<ul>
+<li><p>添加语言运行时</p>
+</li>
+<li><p>使用<code>whereis go</code>，得到<code>go: /usr/local/go /usr/local/go/bin/go /mnt/d/Go/bin/go.exe</code></p>
+<ul>
+<li><p>第一个参数是go sdk文件夹</p>
+</li>
+<li><p>第二个参数<code>/usr/local/go/bin/go</code>对应Go可执行文件参数</p>
+</li>
+<li><p>第三个是Windows10里面的go环境映射到了wsl2</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="/../images/go2.png" alt="20230907102932244"></p>
+<ul>
+<li>运行&#x2F;调试配置更改</li>
+</ul>
+<h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><h3 id="127-0-0-1"><a href="#127-0-0-1" class="headerlink" title="127.0.0.1"></a>127.0.0.1</h3><p><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/windows/wsl/networking">官方文档说明</a></p>
+<ul>
+<li>wsl下的<code>127.0.0.1</code>并不能正确访问，应该使用<code>localhost</code>进行访问，得到一种解释：<code>127.0.0.1</code>要走从网络层全链路走一圈的，<code>localhost</code>则不必。</li>
+<li>wsl访问windows下的服务，需要通过IP地址方式，<code>ip route | grep default | awk &#39;&#123;print $3&#125;&#39;</code>获取本机IP地址。</li>
+</ul>
+<h3 id="wsl备份以及恢复"><a href="#wsl备份以及恢复" class="headerlink" title="wsl备份以及恢复"></a>wsl备份以及恢复</h3><pre class=" language-shell"><code class="language-shell">wsl -l -v # 确认wsl版本
+
+# 提前创建文件夹
+wsl --export Ubuntu2204 D:\wsl\ubuntu.tar # 导出Ubuntu2204 到d盘
+
+wsl --unregister Ubuntu2204 # 注销旧版本
+
+wsl -l -v # 确认注销
+
+wsl --import Ubuntu2204 D:\wsl D:\wsl\ubuntu.tar # 导入备份文件
+
+wsl -s Ubuntu2204 # 设置为默认
+</code></pre>
+<p>还原后的子系统进入后，默认成了 root 用户，解决方法如下，在终端启动时，配置<code>wsl.exe -d Ubuntu2204 -u xiaocai</code>。</p>
+<h3 id="docker-desktop"><a href="#docker-desktop" class="headerlink" title="docker-desktop"></a>docker-desktop</h3><ul>
+<li>默认情况下，Docker Desktop for Window会创建如下两个发行版（distro）：<ul>
+<li>docker-desktop：用于存放程序</li>
+<li>docker-desktop-data：用于存放镜像</li>
+</ul>
+</li>
+<li>docker-desktop-data部分应该按照5.2一样正常迁移</li>
+</ul>
+<pre class=" language-shell"><code class="language-shell">wsl --export docker-desktop-data D:\wsl\docker-data.tar
+
+wsl --unregister docker-desktop-data
+
+wsl --import docker-desktop-data D:\wsl\docker D:\wsl\docker-data.tar
+
+wsl -l -v
+</code></pre>
+<h3 id="goland-error-obtaining-VCS-status-exit-status-128"><a href="#goland-error-obtaining-VCS-status-exit-status-128" class="headerlink" title="goland error obtaining VCS status: exit status 128"></a>goland error obtaining VCS status: exit status 128</h3><p>设置，<code>go env -w GOFLAGS=&quot;-buildvcs=false&quot;</code></p>
+<h3 id="fatal-detected-dubious-ownership-in-repository-at"><a href="#fatal-detected-dubious-ownership-in-repository-at" class="headerlink" title="fatal: detected dubious ownership in repository at"></a>fatal: detected dubious ownership in repository at</h3><ul>
+<li>启动用户更换成了root，导致goland打开项目时也是root，和创建文件的xiaocai不一致</li>
+<li>修改&#x2F;etc&#x2F;wsl.conf，设置默认启动用户</li>
+</ul>
+<pre class=" language-shell"><code class="language-shell">[boot]
+systemd=true
+
+[user]
+default = xiaocai
+</code></pre>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2023/07/12/4-GMP%E6%A8%A1%E5%9E%8B/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2024-01-14 17:09:30
+            </span>
+            
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2023/09/12/6-%E5%88%86%E5%B8%83%E5%BC%8FID/" target="_self">
+                <span>Next</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEWSL"><span class="toc-text">配置WSL</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%87%E6%8D%A2root%E7%94%A8%E6%88%B7"><span class="toc-text">切换root用户</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%99%90%E5%88%B6Vmmem%E5%86%85%E5%AD%98"><span class="toc-text">限制Vmmem内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8docker"><span class="toc-text">使用docker</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEGit"><span class="toc-text">配置Git</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E7%9B%AE%E5%BD%95"><span class="toc-text">启动目录</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%8A%A8%E5%AE%89%E8%A3%85"><span class="toc-text">自动安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85"><span class="toc-text">手动安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#golang%E9%85%8D%E7%BD%AE"><span class="toc-text">golang配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="toc-text">常见问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#127-0-0-1"><span class="toc-text">127.0.0.1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#wsl%E5%A4%87%E4%BB%BD%E4%BB%A5%E5%8F%8A%E6%81%A2%E5%A4%8D"><span class="toc-text">wsl备份以及恢复</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#docker-desktop"><span class="toc-text">docker-desktop</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#goland-error-obtaining-VCS-status-exit-status-128"><span class="toc-text">goland error obtaining VCS status: exit status 128</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#fatal-detected-dubious-ownership-in-repository-at"><span class="toc-text">fatal: detected dubious ownership in repository at</span></a></li></ol></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/shixiaocaia">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/shixiaocaia">Copyright © 2024 shixiaocaia</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="Search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>First search, index file loading, please wait...<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>No result<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The search.xml file was not found, please refer to：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The request failed, Try to refresh the page or try again later.<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+
+      </div>
+    </div>
+  </body>
+</html>

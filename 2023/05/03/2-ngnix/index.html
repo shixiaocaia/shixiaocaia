@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="shixiaocaia" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      Nginx是什么 
+      
+      
+      |
+    
+     shixiaocaia
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.ico">
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="shixiaocaia" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism.css" type="text/css"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.jpg" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">shixiaocaia</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">Nginx是什么</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2024-01-26 22:35:04
+        </span>
+        
+      </div>
+      <div class="markdown-body">
+        <h2 id="正向-反向代理"><a href="#正向-反向代理" class="headerlink" title="正向 &#x2F; 反向代理"></a>正向 &#x2F; 反向代理</h2><p>当我们想要探索外面的世界时，使用的魔法，就相当于一个正向代理，将请求发送给代理服务器，代理服务器访问国外网站后将数据转发给我们。</p>
+<p>通过正向代理屏蔽了真实的客户端信息，对外隐藏用户信息，同时可以记录用户访问记录；此外可以对客户端访问授权，上网进行认证。</p>
+<p>淘宝双十一时，同时在线的人数巨大，单个服务器远不能满足人们日益增长的需求。由此引出了<strong>分布式部署</strong>，通过多台服务器解决访问人数首先问题，实现负载均衡，Nginx在这其中担任了反向代理服务器的职责。</p>
+<p>当多个客户端发送请求给服务器，Nginx服务器收到请求后，按照一定规则分发给后端的业务处理服务器。</p>
+<p>反向代理，代理的是<strong>服务端一侧</strong>，隐藏了服务器的信息，客户端无感知代理的存在，用户请求发送到Nginx一侧，再具体分发给服务器处理。</p>
+<p>反向代理服务器除了<strong>优化网站的负载</strong>以外，还可以将反向代理设置为公网访问地址，Web服务器是内网，<strong>保证内网的安全</strong>。</p>
+<p><a href="../images/nginx-1.png"></a></p>
+<h2 id="关于Ngnix"><a href="#关于Ngnix" class="headerlink" title="关于Ngnix"></a>关于Ngnix</h2><p>简单来说，Nginx是一款轻量级的Web服务器，采用事件驱动的异步非阻塞处理方式框架，这让其具有极好的 IO 性能，时常用于服务端的<strong>反向代理</strong>和<strong>负载均衡</strong>。</p>
+<blockquote>
+<p>Web服务器：负责处理和响应用户请求，一般也称为http服务器，如 Apache、IIS、Nginx。</p>
+<p>应用服务器：存放和运行系统程序的服务器，负责处理程序中的业务逻辑，如 Tomcat、Weblogic、Jboss（现在大多数应用服务器也包含了web服务器的功能）。</p>
+</blockquote>
+<p>一个基本Nginx进程模型，包括了：</p>
+<ul>
+<li>master进程，有且只有一个，负责读取验证配置文件，以及管理worker进程；</li>
+<li>work进程，负责处理实际的请求，存在多个。</li>
+</ul>
+<h3 id="为什么选择Nginx"><a href="#为什么选择Nginx" class="headerlink" title="为什么选择Nginx"></a>为什么选择Nginx</h3><p>Nginx居然以下优点：</p>
+<ul>
+<li><p>一种轻量级的web服务器</p>
+</li>
+<li><p>Nginx 安装简单，配置简洁，作用却无可替代</p>
+</li>
+<li><p>占用内存少、启动速度快、并发能力强</p>
+</li>
+<li><p>扩展好，第三方插件多</p>
+</li>
+<li><p>…</p>
+</li>
+</ul>
+<h3 id="动静分离"><a href="#动静分离" class="headerlink" title="动静分离"></a>动静分离</h3><p>Nginx服务器将收到的请求划分为动态请求和静态请求：</p>
+<ul>
+<li>静态请求直接从 nginx 服务器所设定的根目录路径去取对应的资源，直接返回。</li>
+<li>动态请求转发给真实的后台（前面所说的应用服务器，如图中的Tomcat）去处理。</li>
+</ul>
+<p>这样做能够减轻应用服务器（实现具体后端业务逻辑）压力，将后台api接口服务化，将前后端代码分开并行开发和部署。</p>
+<h3 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h3><p>随着业务的不断增长和用户不断增多，使用服务器集群提升业务性能和用户体验。</p>
+<p>Nginx在实现反向代理功能基础上，通过负载均衡算法算法实现请求的合理分配。常用的负载均衡调度算法包括以下：</p>
+<ul>
+<li><p><strong>weight轮询</strong>（默认，常用）：赋予每一台的后端机器不同的权重值（weight），权重值越大，被分配到请求的几率越大，主要根据工作环境中后端服务器硬件配置进行调整。</p>
+</li>
+<li><p><strong>ip_hash</strong>(常用)：每个请求按访问ip的hash结果分配，这样每个访客固定访问一个后端服务器。这也在一定程度上解决了集群部署环境下session共享的问题。</p>
+</li>
+<li><p><strong>url_hash</strong>：按照访问的url的hash结果分配请求，每个请求的url会指向后端固定的某个服务器，可以在Nginx作为静态服务器的情况下提高缓存效率。使用的话需要安装Nginx的hash软件包。</p>
+</li>
+</ul>
+<p>此外Nginx还带有<strong>健康检查</strong>功能，会定期轮询集群里所有服务器发送健康检查请求，当集群中某个服务器异常时，后续请求不会分发到该处，知道下一次健康检查时，服务器恢复正常。</p>
+<blockquote>
+<p>参考文章</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/wcwnina/p/8728391.html">博客园-Nginx相关介绍</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904129987526663">掘金-连前端都看得懂的《Nginx入门》…</a></li>
+</ul>
+</blockquote>
+<h3 id="HTTPS配置"><a href="#HTTPS配置" class="headerlink" title="HTTPS配置"></a>HTTPS配置</h3><p>需要使用SSL证书，主流都能申请到，对应pem为证书文件，key为私钥文件，放到nginx中；</p>
+<p>一般都会配置一个重定向来让 HTTP 的请求自动跳转到https。</p>
+<h3 id="虚拟主机"><a href="#虚拟主机" class="headerlink" title="虚拟主机"></a>虚拟主机</h3><p>很多时候一个网站在起步阶段并没有非常大的访问量，把多个网站部署在一起也不会对服务器造成太大的压力，而且这样可以节省服务器的资源和成本；</p>
+<p>每个server对应一个虚拟主机，server_name指定虚拟主机的域名，当我们访问这个域名的时候，就会被这个 Server 块所匹配，然后就会执行这个 Server 块中的配置。这样就可以在一台服务器上配置多个虚拟主机了；</p>
+<p>一般会把多个虚拟主机的配置信息，放到一个server文件中，最后include，做统一管理；</p>
+<p><a href="../images/nginx-2.png"></a></p>
+<h2 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h2><ol>
+<li>通过编译安装方式，预编译，编译，安装；</li>
+</ol>
+<pre class=" language-shell"><code class="language-shell">./configure
+make 
+make install
+</code></pre>
+<ol start="2">
+<li>Linux安装成功，没有消息表示成功（Linux系统特点）；</li>
+<li>sudo nginx启动nginx；</li>
+<li>Nginx -V 查看信息，包含了配置文件的信息；</li>
+<li>ps -ef | grep nginx，查看对应进程信息；</li>
+<li>lsof -i :80，查看端口的占用情况</li>
+<li>sudo nginx -s stop &#x2F; quit &#x2F; reload &#x2F; reopen，分别为优雅停止、立即停止、重载配置文件、重新打开日志文件</li>
+<li>常用nginx -V或者nginx -t 查看常见位置信息；</li>
+<li>当我修改了配置文件，需要nginx -s reload重新运行配置文件；</li>
+</ol>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2023/04/17/12-IO/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2024-01-26 22:35:04
+            </span>
+            
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2023/05/12/3-Bitcask/" target="_self">
+                <span>Next</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A3%E5%90%91-%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86"><span class="toc-text">正向 &#x2F; 反向代理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8ENgnix"><span class="toc-text">关于Ngnix</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%89%E6%8B%A9Nginx"><span class="toc-text">为什么选择Nginx</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB"><span class="toc-text">动静分离</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="toc-text">负载均衡</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HTTPS%E9%85%8D%E7%BD%AE"><span class="toc-text">HTTPS配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E4%B8%BB%E6%9C%BA"><span class="toc-text">虚拟主机</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="toc-text">基本使用</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/shixiaocaia">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/shixiaocaia">Copyright © 2024 shixiaocaia</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="Search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>First search, index file loading, please wait...<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>No result<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The search.xml file was not found, please refer to：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The request failed, Try to refresh the page or try again later.<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+
+      </div>
+    </div>
+  </body>
+</html>

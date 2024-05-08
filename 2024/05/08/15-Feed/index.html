@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="shixiaocaia" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      feed流 | 微信朋友圈如何实现的 
+      
+      
+      |
+    
+     shixiaocaia
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.ico">
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="shixiaocaia" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism.css" type="text/css"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.jpg" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">shixiaocaia</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">feed流 | 微信朋友圈如何实现的</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2024-05-08 21:29:11
+        </span>
+        
+      </div>
+      <div class="markdown-body">
+        <h1 id="什么是Feed流"><a href="#什么是Feed流" class="headerlink" title="什么是Feed流"></a>什么是Feed流</h1><p>比如微博，B站刷视频，不停刷会一直有信息涌现。就像给宠物喂食物一样，只要吃光了就一直加，故此称之为Feed（喂养）。 Feed流包含以下两种：</p>
+<ul>
+<li>基于关注并按照时间排序，比如朋友圈，微博关注列表<ul>
+<li>关注Timeline</li>
+<li>个人Timeline，存放自己发送过的，比如微博个人首页，自己发送的</li>
+</ul>
+</li>
+<li>基于算法推荐的，比如视频，微博推流</li>
+</ul>
+<p>实际场景：</p>
+<ul>
+<li>朋友圈，微博关注列表</li>
+<li>刷视频，微博推流</li>
+</ul>
+<h1 id="推拉模型"><a href="#推拉模型" class="headerlink" title="推拉模型"></a>推拉模型</h1><h2 id="拉模型-读扩散"><a href="#拉模型-读扩散" class="headerlink" title="拉模型 &#x2F; 读扩散"></a>拉模型 &#x2F; 读扩散</h2><p>基本步骤：</p>
+<ul>
+<li>先查询用户关注的创作者uid</li>
+<li>根据uid查询所有发布文章</li>
+<li>按照发布时间降序排列，选择一定数量的文章，作为Timeline返回</li>
+</ul>
+<p>使用拉模型方案用户每打开一次「关注页」系统就需要读取 N 个人的文章（N 为用户关注的作者数）, 因此拉模型也被称为<strong>读扩散</strong>，具有以下特点：</p>
+<ul>
+<li>拉模型不需要存储额外的数据，实现简单</li>
+<li>缺点每次阅读关注页，都需要大量读取和一次重新排序操作，如果用户关注人数比较多，一次拉取耗时比较长，影响用户体验</li>
+</ul>
+<aside> 💡 一次全量拉取 + 一次排序，返回有限数据
+
+</aside>
+
+<h2 id="推模型-写扩散"><a href="#推模型-写扩散" class="headerlink" title="推模型 &#x2F; 写扩散"></a>推模型 &#x2F; 写扩散</h2><p>基本步骤：</p>
+<ul>
+<li>创作者发布文章时，推送新文章到粉丝关注的Timeline，又称为<strong>写扩散</strong></li>
+<li>用户读取Timeline，不需要取逐个拉取关注列表再排序，体验好</li>
+</ul>
+<p>但是当粉丝量大时，每次推送数据的写入量巨大，可以通过MQ来实现向粉丝的TimeLine异步推送，实现相对拉模型，复杂一些。</p>
+<aside> 💡 微信朋友圈实际采用写扩散形式，读扩散打开时cpu压力过大，使用比较少
+
+</aside>
+
+<h2 id="在线推，离线拉"><a href="#在线推，离线拉" class="headerlink" title="在线推，离线拉"></a>在线推，离线拉</h2><p>对于拉模型，当关注数量多时，读取 + 排序是一个重操作，对于用户体验很差。</p>
+<p>对于推模型，写入量较大。</p>
+<p>针对上述两点，针对活跃用户采用推模型，非活跃用户登陆后利用拉模型重新构建关注的Timeline，并且可以设置过期时间释放Timeline释放资源。</p>
+<h1 id="存储优化"><a href="#存储优化" class="headerlink" title="存储优化"></a>存储优化</h1><h2 id="ZSet"><a href="#ZSet" class="headerlink" title="ZSet"></a>ZSet</h2><ul>
+<li>存储上可以利用Redis减轻MySQL压力，并且Redis支持有序结构，非活跃用户数据也会过期释放</li>
+<li>将Timeline缓存在Redis中，利用ZSet有序性可以实现按照时间、点赞数的拉取，并且基于ZSet可以达到去重</li>
+<li>将article_id作为ZSet的member，发布时间戳、点赞数作为score，实现不同的Timeline</li>
+<li>在推送新Feed的时候，对目标的Timeline的SortedSet进行ZAdd操作，如缓存里没有使用拉模型重建</li>
+<li>用户刷取视频，从ZSet中通过ZRange拉取id，再根据id获取具体title，url等信息</li>
+</ul>
+<h2 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h2><p>当Redis不存在Timeline缓存，无法判断是缓存失效还是用户Timeline为空，需要重复读数据库判断。</p>
+<p>可以在ZSet中存放NoMore的标志，避免数据库也没有更多的数据，频繁查询数据库，造成的缓存击穿。</p>
+<h2 id="多层缓存"><a href="#多层缓存" class="headerlink" title="多层缓存"></a>多层缓存</h2><p>Redis作为NoSQL存放在内存中，存储数据是有限的，考虑使用其他有序结构数据库构建多级缓存。</p>
+<p>实际拉取数据一般会拉取超额的数量，利用本地内存，避免高频查询请求</p>
+<h1 id="细节处理"><a href="#细节处理" class="headerlink" title="细节处理"></a>细节处理</h1><h2 id="分页器"><a href="#分页器" class="headerlink" title="分页器"></a>分页器</h2><p>Feed是一个动态列表，随着时间变化不断变化，传统的Limit + offset会导致拉取重复的文章</p>
+<p>一般还是用feed流最后一条记录的时间戳来拉取指定记录，同时在生成score的同时用时间戳 + id做拼接，在不影响排序的前提下避免重复</p>
+<p>（在拉取请求时会返回最后一条记录的时间戳）</p>
+<h2 id="大规模推送"><a href="#大规模推送" class="headerlink" title="大规模推送"></a>大规模推送</h2><p>同时推送大批量任务，可能导致单机Worker过载；可以将任务拆分成多个子任务，通过消息队列发送到多台MQ worker上进行处理，失败也只需要局部重试</p>
+<h1 id="如何设计一个微信朋友圈那样的系统"><a href="#如何设计一个微信朋友圈那样的系统" class="headerlink" title="如何设计一个微信朋友圈那样的系统"></a>如何设计一个微信朋友圈那样的系统</h1><ul>
+<li>设计数据库的表，列出主要的字段<ul>
+<li>一张关系列表，包含了用户的好友列表，id，friend_id</li>
+<li>一张pyq文章列表，包含了content，author_id，publicTime</li>
+<li>可以按照时间分库分表</li>
+</ul>
+</li>
+<li>为了提升快速朋友圈打开，显示文章速度<ul>
+<li>可以利用缓存，存储相关的文章id，使用Redis的ZSet结构，实现基于时间的关注列表</li>
+<li>好友发布新的朋友圈，推送到对应的好友的ZSet列表中（存在的），通过ZAdd添加，member为id，score为时间戳</li>
+<li>设置一定过期时间，当用户第一次打开朋友圈时，利用拉模型重新构建缓存Timeline，过期删除释放资源；查询好友id，再查询好友发布id，做一次排序，返回有限的数据</li>
+</ul>
+</li>
+</ul>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2023/10/20/13-Docker/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2024-05-08 21:29:11
+            </span>
+            
+          </div>
+          <div class="post-foot-prev">
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFFeed%E6%B5%81"><span class="toc-text">什么是Feed流</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8E%A8%E6%8B%89%E6%A8%A1%E5%9E%8B"><span class="toc-text">推拉模型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%89%E6%A8%A1%E5%9E%8B-%E8%AF%BB%E6%89%A9%E6%95%A3"><span class="toc-text">拉模型 &#x2F; 读扩散</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A8%E6%A8%A1%E5%9E%8B-%E5%86%99%E6%89%A9%E6%95%A3"><span class="toc-text">推模型 &#x2F; 写扩散</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%A8%E7%BA%BF%E6%8E%A8%EF%BC%8C%E7%A6%BB%E7%BA%BF%E6%8B%89"><span class="toc-text">在线推，离线拉</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96"><span class="toc-text">存储优化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ZSet"><span class="toc-text">ZSet</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="toc-text">缓存穿透</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E5%B1%82%E7%BC%93%E5%AD%98"><span class="toc-text">多层缓存</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BB%86%E8%8A%82%E5%A4%84%E7%90%86"><span class="toc-text">细节处理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E9%A1%B5%E5%99%A8"><span class="toc-text">分页器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%A7%E8%A7%84%E6%A8%A1%E6%8E%A8%E9%80%81"><span class="toc-text">大规模推送</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E5%BE%AE%E4%BF%A1%E6%9C%8B%E5%8F%8B%E5%9C%88%E9%82%A3%E6%A0%B7%E7%9A%84%E7%B3%BB%E7%BB%9F"><span class="toc-text">如何设计一个微信朋友圈那样的系统</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/shixiaocaia">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/shixiaocaia">Copyright © 2024 shixiaocaia</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="Search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>First search, index file loading, please wait...<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>No result<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The search.xml file was not found, please refer to：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The request failed, Try to refresh the page or try again later.<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+
+      </div>
+    </div>
+  </body>
+</html>

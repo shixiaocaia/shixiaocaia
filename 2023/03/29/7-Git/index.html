@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="shixiaocaia" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      Git基本使用 
+      
+      
+      |
+    
+     shixiaocaia
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.ico">
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="shixiaocaia" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism.css" type="text/css"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.jpg" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">shixiaocaia</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">Git基本使用</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2024-01-14 17:21:22
+        </span>
+        
+      </div>
+      <div class="markdown-body">
+        <h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/list/watchlater?oid=528356813&bvid=BV1HM411377j&spm_id_from=..top_right_bar_window_view_later.content.click&p=9">GeekHour Git教程</a></p>
+<p><a target="_blank" rel="noopener" href="https://learngitbranching.js.org/?locale=zh_CN">菜就多练</a></p>
+<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6974184935804534815#heading-15">CSDN-工作中如何使用Git的</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2015/12/git-workflow.html">阮一峰 Git 工作流程</a></p>
+</blockquote>
+<h2 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h2><pre class=" language-shell"><code class="language-shell"># 配置SSH
+ssh-keygen -t rsa -C "这里换上你的邮箱，备注信息"
+# 不需要密码，直接三次回车
+# 生成id_rsa和id_rsa.pub
+# 添加公钥pub文件内容，到Settings -- SSH and GPG keys
+cat ~/.ssh/id_rsa.pub
+# 测试配置成功
+ssh -T git@github.com 
+
+# 输入yes
+The authenticity of host 'github.com (20.205.243.166)' can't be established.
+ED25519 key fingerprint is SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+
+Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+Hi shixiaocaia! You've successfully authenticated, but GitHub does not provide shell access.
+
+# GitHub中添加SSH id_rsa.pub内容
+# 再次验证
+ssh -T git@github.com 
+
+# Hi shixiaocaia! You've successfully authenticated, but GitHub does not provide shell access.
+</code></pre>
+<ol>
+<li>下载Git，Win&#x2F;Liunx…</li>
+<li>配置用户信息</li>
+</ol>
+<pre class=" language-shell"><code class="language-shell"># 配置用户信息
+git config --global user.name "shixiaocaia"
+git config --global user.email shixiaocaia@gmail.com
+git config --list
+</code></pre>
+<ol start="3">
+<li>设置全局代理</li>
+</ol>
+<pre class=" language-shell"><code class="language-shell">git config --global http.proxy socks5://127.0.0.1:10808
+git config --global https.proxy socks5://127.0.0.1:10808
+</code></pre>
+<ol start="4">
+<li>配置SSH</li>
+</ol>
+<pre class=" language-shell"><code class="language-shell">ssh-keygen -t rsa -C "这里换上你的邮箱"
+# 不需要密码，直接三次回车
+# 生成id_rsa和id_rsa.pub
+# 添加公钥pub文件内容，到Settings -- SSH and GPG keys
+# Linux下显示私钥内容
+cat ~/.ssh/id_rsa.pub
+# 测试配置成功
+ssh -T git@github.com 
+
+# 输入yes
+The authenticity of host 'github.com (20.205.243.166)' can't be established.
+ED25519 key fingerprint is SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+
+Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+Hi shixiaocaia! You've successfully authenticated, but GitHub does not provide shell access.
+
+# GitHub中添加SSH id_rsa.pub内容
+# 再次验证
+ssh -T git@github.com 
+
+# Hi shixiaocaia! You've successfully authenticated, but GitHub does not provide shell access.
+</code></pre>
+<h2 id="工作区域"><a href="#工作区域" class="headerlink" title="工作区域"></a>工作区域</h2><p><img src="/../images/git-1.png" alt="0bc63cb7-4c90-4680-8749-9091a262b19c"><br><img src="/../images/git-2.png" alt="6f8f53a3-1bf8-499a-967f-28758e0993ec"></p>
+<ul>
+<li>workspace：工作区，实际操作的目录；</li>
+<li>staging area &#x2F; index：暂存区，临时存放修改，通过<code>git add</code>命令添加工作区文件到暂存区；</li>
+<li>local Repository：本地仓库，通过<code>git commit</code> 提交暂存区内容，会进入本地仓库；</li>
+<li>Remote Repository：远程仓库，用来托管代码。</li>
+</ul>
+<hr>
+<p><img src="/../images/git-3.png" alt="a528f4cb-9d53-40a7-bcda-23433dfbe999"></p>
+<ul>
+<li><p>一开始创建文件，是未跟踪状态，通过<code>git add .</code>添加到暂存区，每次修改后都需要<code>git add . </code>添加到暂存区</p>
+</li>
+<li><p><code>git ls-files</code>查看暂存区内容</p>
+</li>
+<li><p><code>git commit</code>提交暂存区的内容到本地仓库</p>
+<ul>
+<li>不会提交工作区内的内容，所以需要先<code>git add.</code>添加所有文件到暂存区，再提交</li>
+<li><code>git commit -m &quot;your message&quot;</code>，记录备注信息</li>
+</ul>
+</li>
+<li><p><code>git log</code>查看commit记录，<code>git log --oneline</code>查看简洁提交记录</p>
+</li>
+<li><p><code>git reflog</code></p>
+<pre class=" language-shell"><code class="language-shell">$ git reflog
+8718541 (HEAD -> main) HEAD@&#123;0&#125;: reset: moving to 87185414b36cf347c173d0063a721ebf7a9e5737
+8718541 (HEAD -> main) HEAD@&#123;1&#125;: reset: moving to 87185414b36cf347c173d0063a721ebf7a9e5737
+8718541 (HEAD -> main) HEAD@&#123;2&#125;: commit: tt
+884fc87 HEAD@&#123;3&#125;: commit: test2
+c7d1abc HEAD@&#123;4&#125;: commit: test
+8bbcf7c HEAD@&#123;5&#125;: reset: moving to HEAD
+8bbcf7c HEAD@&#123;6&#125;: commit (amend): test2
+</code></pre>
+<ul>
+<li>输出<code>HEAD@&#123;6&#125;</code>，是相对当前时间的索引位置，越大数字代表越早的操作，可以用<code>HEAD@&#123;6&#125;</code>或者8718541哈希值来定位</li>
+</ul>
+</li>
+<li><p><code>git reset</code>回退到某一个版本，默认上一个版本</p>
+<ul>
+<li>–soft，保留工作区和暂存区</li>
+<li>–hard，删除两个版本之间工作区和暂存区的内容</li>
+<li>–mixed，只保留工作区内容，清空暂存区内容</li>
+<li>指令后面跟上版本号，比如<code>git reset --hard 234asda</code></li>
+<li>如果误操作了Git，可以通过<code>git reflog</code>查看操作的历史记录，使用<code>git reset --hard 234asda</code>回退误操作之前的命令</li>
+</ul>
+</li>
+<li><p><code>git diff</code>默认查看工作区和暂存区之间的差异内容</p>
+<ul>
+<li><code>git diff HEAD</code>查看工作区和最新提交之间的之间的差异</li>
+<li><code>git diff --cached</code>查看工作区和版本库之间的差异</li>
+<li><code>git diff 234asd 123asda</code> 比较不同提交的差异，或者比较提交和HEAD的差异</li>
+<li><code>git diff HEAD~ HEAD</code> 查看当前提交和上一个提交的差异，波浪线后可以加数字表示前几个版本</li>
+</ul>
+</li>
+<li><p>删除操作，先删除本地文件，再提交，删除暂存区的记录</p>
+<ul>
+<li><code>git rm &lt;file&gt;</code>，同时删除工作区和暂存区记录</li>
+<li><code>git rm --cached &lt;file&gt;</code>删除暂存区记录</li>
+<li>删除后记得提交</li>
+</ul>
+</li>
+</ul>
+<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><h3 id="init"><a href="#init" class="headerlink" title="init"></a>init</h3><pre class=" language-shell"><code class="language-shell">git init
+
+# 拉取项目
+git clone <URL>
+
+git remote add origin url / ssh
+# 使用ssh连接不需要登陆验证
+
+git pull -u origin main
+# 拉取origin的main分支到本地main分支
+# -u 将远程仓库和本地仓库关联起来
+</code></pre>
+<ul>
+<li>如果使用git clone同步项目到本地，而上述更多是从直接将本地文件夹与远端仓库建立连接</li>
+<li>初始化后的.git文件夹，通过<code>ls -a</code>显示，包含了仓库的信息，一般隐藏避免删除</li>
+<li><code>git remote -v</code>获取远程仓库信息</li>
+</ul>
+<h3 id="commit"><a href="#commit" class="headerlink" title="commit"></a>commit</h3><pre class=" language-shell"><code class="language-shell"># 提交暂存的更改，会新开编辑器进行编辑
+git commit 
+# 提交暂存的更改，并记录下备注
+git commit -m "you message"
+# 等同于 git add . && git commit -m
+git commit -am
+# 对最近一次的提交的信息进行修改,此操作会修改commit的hash值
+git commit --amend
+</code></pre>
+<h3 id="branch"><a href="#branch" class="headerlink" title="branch"></a>branch</h3><pre class=" language-shell"><code class="language-shell"># 查看本地分支
+git branch
+# 查看远程分支
+git branch -r
+# 查看所有分支
+git branch -a
+
+# 切换到test分支
+git checkout test
+# 推荐使用switch切换分支，checkout具有恢复功能，容易引起误解
+git switch test
+
+# 创建分支
+git branch hello
+
+# 创建并切换分支
+git branch -b main
+
+# 删除分支
+git branch -d local_branch_name
+git branch origin :remote_branch_name
+# :表示删除
+# 如果是未被合并的命令，需要通过-D来强制删除
+
+# 重命名分支
+git branch -m <old-branch-name> <new-branch-name>
+
+# 查看分支属于哪部分拉出来的
+git reflog --date=local | grep <branchname> 
+</code></pre>
+<h3 id="pull"><a href="#pull" class="headerlink" title="pull"></a>pull</h3><pre class=" language-shell"><code class="language-shell"># 拉取最新的origin代码
+git fetch
+
+# 拉取并更新本地
+git fetch origin main:local_branch
+
+# 基于某个远程分支创建新的本地分支
+git checkout -b main origin/main
+</code></pre>
+<h3 id="push-VS-fetch"><a href="#push-VS-fetch" class="headerlink" title="push VS fetch"></a>push VS fetch</h3><pre class=" language-shell"><code class="language-shell"># 拉取最新远程代码到本地，获取特定分支变化
+git fetch <远程主机名> <分支名>
+
+# 合并最新代码
+git merge origin/main
+
+# git pull = git fetch & git merge origin main
+git pull <远程主机名> <本地分支名>:<远程分支名>
+# 一般本地分支名和远程分支名相同时，合并分支名
+
+# 用rebase 替代 merge，保证公共代码合并到当前分支是线性的
+git pull --rebase
+</code></pre>
+<ul>
+<li>在实际中进行PR之前，需要fetch最新的，然后rebase origin&#x2F;main，将分支变基到目标分支的最新版本，以便包含最新的变更</li>
+<li>如果过程中产生冲突，按序解决<ul>
+<li>处理产生冲突的文件</li>
+<li>git add 文件名，标记处理完的文件，这里会创建一个虚拟提交，不需要手动的commit</li>
+<li>git rebase –continue，这个过程中是一个个处理变基commit，可能发生多次冲突。继续执行rebase操作，重复执行</li>
+<li>git push origin test_branch –force，处理完成后</li>
+</ul>
+</li>
+</ul>
+<h3 id="gitignore"><a href="#gitignore" class="headerlink" title="gitignore"></a>gitignore</h3><pre class=" language-shell"><code class="language-shell">touch .gitignore
+
+git rm  --cached xxx
+# 添加 xxx/
+
+git commit -m"gitignore"
+git push origin main
+</code></pre>
+<ul>
+<li>哪些文件应该被忽略<ul>
+<li>系统或者软件自动生成的文件</li>
+<li>编译产生的中间文件和结果文件</li>
+<li>运行时生成的日志文件、缓存文件、临时文件</li>
+<li>涉及身份、密码、口令、密钥等敏感信息文件</li>
+</ul>
+</li>
+<li>将需要忽略的文件写入到gitignore文件当中，<strong>如果文件已经存在版本库当中，需要先删除，才能生效</strong><ul>
+<li>git rm  –cached xxx删除记录，删除暂存区内文件</li>
+</ul>
+</li>
+<li>根据官方的gitignore的不同语言版本进行修改</li>
+</ul>
+<h3 id="merge-VS-rebase"><a href="#merge-VS-rebase" class="headerlink" title="merge VS rebase"></a>merge VS rebase</h3><pre class=" language-shell"><code class="language-shell">     D---E test
+    /
+A---B---C---F master
+</code></pre>
+<ul>
+<li><p>git merge</p>
+<pre class=" language-shell"><code class="language-shell">     D--------E
+    /          \
+A---B---C---F---G    test , master
+</code></pre>
+<ul>
+<li>当产生冲突时，需要处理冲突部分文件，再重新提交merge后的结果（<code>git add  + commit</code>冲突文件），会生成一次提交G</li>
+<li>融合代码到公共分支时使用git merge，而不是git rebase</li>
+</ul>
+</li>
+<li><p>git rebase</p>
+<pre class=" language-shell"><code class="language-shell"> A---B---D---E---C `---F` test , master
+</code></pre>
+<ul>
+<li>在master下执行rebase，会以master为合并后的分支，将test分支内容以交界点变基到master上，老的提交没有销毁不能再被访问或者使用；</li>
+<li>产生冲突需要逐个处理，<code>git add .</code> <code>git rebase -continue</code>，或者<code>git rebase -skip</code>忽略当前冲突；</li>
+<li>rebase后当前分支会与线上分支不同（加入了新的commit），需要<code>--force</code>强制；</li>
+<li><code>git rebase -i HEAD~4</code>，用于合并多次提交记录，注意是从上往下；</li>
+<li>融合代码到个人分支时候使用<code>git rebase</code>，可以不污染分支的提交记录，形成简洁的线性提交历史记录。</li>
+</ul>
+</li>
+<li><p>git rebase和git merge区别</p>
+<ul>
+<li>git merge不会破坏原分支的提交记录，方便回溯和查看，缺点是产生额外的提交节点，分支图比较复杂；</li>
+<li>git rebase不需要新增额外的提交记录，形成<strong>线性历史</strong>，直观和干净。缺点会改变提交历史，需要处理多次冲突问题；</li>
+<li>公共代码–&gt;个人分支：git rebase，线性提交记录；个人分支–&gt;公共代码：git merge；</li>
+</ul>
+</li>
+<li><p>常见的公共分支，master分支，feature是个人分支</p>
+</li>
+</ul>
+<h3 id="git-cherry-pick"><a href="#git-cherry-pick" class="headerlink" title="git cherry-pick"></a>git cherry-pick</h3><ul>
+<li>用于获取某个分支的单个提交，引入到当前分支来，可以同时合并多个，不连续的分支</li>
+<li>其实可以基于rebase实现一部分</li>
+</ul>
+<h3 id="reset-VS-revert"><a href="#reset-VS-revert" class="headerlink" title="reset VS revert"></a>reset VS revert</h3><p><code>git reset</code>回退到某一个版本，默认上一个版本</p>
+<ul>
+<li>–soft，保留工作区和暂存区</li>
+<li>–hard，删除两个版本之间工作区和暂存区的内容</li>
+<li>–mixed，只保留工作区内容，清空暂存区内容</li>
+<li>指令后面跟上版本号，比如<code>git reset --hard 234asda</code></li>
+<li>如果误操作了Git，可以通过<code>git reflog</code>查看操作的历史记录，使用<code>git reset --hard 234asda</code>回退误操作之前的命令</li>
+</ul>
+<p><code>git revert</code>撤销某一次commit，同时新增一条commit记录，reset过于暴力。</p>
+<p>对于个人的 feature 分支而言，可以使用 <code>git reset</code> 来回退历史记录，之后使用 <code>git push --force</code> 进行推送到远程</p>
+<p>但是如果是在多人协作的集成分支上，不推荐直接使用 <code>git reset</code> 命令，而是使用更加安全的 <code>git revert</code> 命令进行撤回提交。这样，提交的历史记录不会被抹去，可以安全的进行撤回。</p>
+<h3 id="git-stash"><a href="#git-stash" class="headerlink" title="git stash"></a>git stash</h3><p>用于切换不同分支时，在不提交的前提下，临时保存到暂存区。</p>
+<pre class=" language-shell"><code class="language-shell">git stash //把本地的改动暂存起来
+git stash save "message" 执行存储时，添加备注，方便查找。
+git stash pop // 应用最近一次暂存的修改，并删除暂存的记录
+git stash apply  // 应用某个存储,但不会把存储从存储列表中删除，默认使用第一个存储,即 stash@&#123;0&#125;，如果要使用其他个，git stash apply stash@&#123;$num&#125; 。
+git stash list // 查看 stash 有哪些存储
+git stash clear // 删除所有缓存的 stash
+</code></pre>
+<h3 id="不同工作取得撤销更改"><a href="#不同工作取得撤销更改" class="headerlink" title="不同工作取得撤销更改"></a>不同工作取得撤销更改</h3><ul>
+<li>git status查看当前状态，修改、跟踪情况</li>
+<li>git checkout –<filename>，撤回工作区的修改</li>
+<li>git reset <filename>，撤回暂存区修改，</li>
+</ul>
+<h2 id="Git-flow"><a href="#Git-flow" class="headerlink" title="Git flow"></a>Git flow</h2><p><img src="/../images/git-5.webp" alt="img"></p>
+<ul>
+<li>主要分支<ul>
+<li>main&#x2F;master分支：可以部署发布</li>
+<li>develop分支：最新开发状态</li>
+</ul>
+</li>
+<li>辅助分支<ul>
+<li>feature：<strong>开发新功能</strong>的分支, 基于 develop, 完成后 merge 回 develop；</li>
+<li>release：辅助版本发布的分支, 用来<strong>测试修复</strong> bug，基于 develop, 完成后 merge 回 develop 和 master</li>
+<li>hotfix：<strong>修复 main 上的问题</strong>,  基于 master, 完成后 merge 回 master 和 develop</li>
+</ul>
+</li>
+<li>GitFlow模型分支管理严格，代码合并清晰，适合中大型团队使用，但是分支流程过多较为复杂</li>
+</ul>
+<h2 id="Github-flow"><a href="#Github-flow" class="headerlink" title="Github flow"></a>Github flow</h2><p><img src="/../images/git6.png" alt="img"></p>
+<ul>
+<li>主要维护一个主分支master&#x2F;main，是随时可以部署发布的内容</li>
+<li>需求新增基于master分支，合并到master分支需要PR，master分支内容一经合并，可以立即部署使用</li>
+<li>相比前者分支足够简单，但不适合多版本产品线使用</li>
+</ul>
+<h2 id="Gitlab-flow"><a href="#Gitlab-flow" class="headerlink" title="Gitlab flow"></a>Gitlab flow</h2><p>结合上述优点，既有适应不同开发环境的弹性，又有单一主分支的简单和便利。</p>
+<p>主要包含两种方式，持续发布和版本发布。</p>
+<p>持续发布主要是在master分支的基础上建立了pre-producition，production分支，master是pre-production的上游，反之下游，开发过程中不断递进发布，从上游到下游。只有紧急情况才会跳过上游。</p>
+<p>版本发布建议的做法是每一个稳定版本，都要从<code>master</code>分支拉出一个分支，比如<code>2-3-stable</code>、<code>2-4-stable</code>等等。以后，只有修补bug，才允许将代码合并到这些分支，并且此时要更新小版本号。</p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2023/02/02/0-Hello%20World/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2024-01-14 17:21:22
+            </span>
+            
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2023/04/15/11-%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1/" target="_self">
+                <span>Next</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-text">参考文章</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="toc-text">环境配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E5%8C%BA%E5%9F%9F"><span class="toc-text">工作区域</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-text">常用命令</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#init"><span class="toc-text">init</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#commit"><span class="toc-text">commit</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#branch"><span class="toc-text">branch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pull"><span class="toc-text">pull</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#push-VS-fetch"><span class="toc-text">push VS fetch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#gitignore"><span class="toc-text">gitignore</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#merge-VS-rebase"><span class="toc-text">merge VS rebase</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#git-cherry-pick"><span class="toc-text">git cherry-pick</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#reset-VS-revert"><span class="toc-text">reset VS revert</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#git-stash"><span class="toc-text">git stash</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8D%E5%90%8C%E5%B7%A5%E4%BD%9C%E5%8F%96%E5%BE%97%E6%92%A4%E9%94%80%E6%9B%B4%E6%94%B9"><span class="toc-text">不同工作取得撤销更改</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Git-flow"><span class="toc-text">Git flow</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Github-flow"><span class="toc-text">Github flow</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Gitlab-flow"><span class="toc-text">Gitlab flow</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/shixiaocaia">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/shixiaocaia">Copyright © 2024 shixiaocaia</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="Search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>First search, index file loading, please wait...<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>No result<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The search.xml file was not found, please refer to：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The request failed, Try to refresh the page or try again later.<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+
+      </div>
+    </div>
+  </body>
+</html>

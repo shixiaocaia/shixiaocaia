@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="shixiaocaia" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      Bitcask | 论文阅读 
+      
+      
+      |
+    
+     shixiaocaia
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.ico">
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="shixiaocaia" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism.css" type="text/css"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.jpg" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">shixiaocaia</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">Bitcask | 论文阅读</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2024-01-14 17:09:30
+        </span>
+        
+      </div>
+      <div class="markdown-body">
+        <h2 id="Bitcask模型背景"><a href="#Bitcask模型背景" class="headerlink" title="Bitcask模型背景"></a>Bitcask模型背景</h2><p>bitcask 存储模型最初是由一个做分布式存储系统的商业化公司 Riak 提出来的。</p>
+<p>Riak 有很多产品，其中就包括一个分布式 KV 存储系统 Riak KV，他们的分布式 KV 产品具有可插拔的存储引擎，可以独立于整个系统，单独开发和测试新的存储引擎。</p>
+<p>基于此，他们想打造一个全新的存储引擎，在最理想的情况下，满足下面的这些条件：</p>
+<ul>
+<li><p>读写低延迟</p>
+</li>
+<li><p>高吞吐，特别是对大量的随机写入</p>
+</li>
+<li><p>能够处理超过内存容量的数据</p>
+</li>
+<li><p>崩溃恢复友好，能够保证快速恢复，尽量不丢数据</p>
+</li>
+<li><p>简单的备份和恢复策略</p>
+</li>
+<li><p>相对简单、易懂的代码结构和数据存储格式</p>
+</li>
+<li><p>在大数据量下，性能有保障</p>
+</li>
+<li><p>能够有自由的授权使用在 Riak 的系统中</p>
+</li>
+</ul>
+<p>现有的存储引擎，没有一个能够很好的满足这些条件，于是 Riak 团队重新设计了一个简洁高效的存储引擎<a target="_blank" rel="noopener" href="https://riak.com/assets/bitcask-intro.pdf">bitcask</a>。</p>
+<h2 id="存储模型实例"><a href="#存储模型实例" class="headerlink" title="存储模型实例"></a>存储模型实例</h2><p><img src="/../images/bitcask-1.png" alt="image-20231005102033724"></p>
+<p>Bitcask存储引擎最初的设计目标并不是追求最高的性能，而是追求足够的性能以及高质量、简单的代码设计和文件格式。</p>
+<blockquote>
+<p>However, our initial goal with Bitcask was not to be the fastest storage engine but rather to get ”enough” speed and also high quality and simplicity of code, design, and file format. </p>
+</blockquote>
+<p>最终实现的一个存储引擎实例，就是系统上的一个目录，并且限制同一时刻只能有一个进程进行写入。将一个进程看作数据库的服务端。</p>
+<blockquote>
+<p>这边在后续自己实现时，简化为每次只允许一个进程打开，通过文件锁来实现，读写操作并发问题通过锁保证。</p>
+</blockquote>
+<h3 id="数据文件"><a href="#数据文件" class="headerlink" title="数据文件"></a>数据文件</h3><p>在这个目录当中，存在多个数据文件，具体分为活跃文件和旧的数据文件（后续称为旧文件）：</p>
+<ul>
+<li>活跃文件仅存在打开数据库时，用于追加写入数据，追加写入性能更高。</li>
+<li>活跃文件写入一定数据量时，活跃文件转为旧文件，旧文件主要用于数据读取。</li>
+</ul>
+<p>在每个数据文件中存储了具体的记录信息：</p>
+<p><img src="/../images/bitcask-2.png" alt="image-20231005085420859"></p>
+<ul>
+<li>crc：数据校验，防止数据被破坏、篡改等</li>
+<li>timestamp：写入数据的时间戳</li>
+<li>ksz：key size，key 的大小</li>
+<li>value_sz：value size，value 的大小</li>
+<li>key：用户实际存储的 key</li>
+<li>value：用户实际存储的 value</li>
+</ul>
+<p>对于Put相当于写入一条记录到活跃文件，而Delete写入一条特殊的墓碑记录，标记前面的记录失效，而不是直接删除某条数据。在下次Merge过程中，才会清理无效的数据。</p>
+<h3 id="内存索引"><a href="#内存索引" class="headerlink" title="内存索引"></a>内存索引</h3><p>回顾Bitcask模型的设计初衷，”能够处理超过内存容量的数据“，所以Bitcask在内存索引中维护Value实际是存储在磁盘中的文件ID，偏移，记录大小。</p>
+<p><img src="/../images/bitcask-3.png" alt="image-20231005102126621"></p>
+<p>在数据追加写入到磁盘当中后，更新内存中的数据结构keydir，实际上就是key的一个集合，存储是key到磁盘文件的位置。</p>
+<p>keydir中存放了一条数据在磁盘中最新的数据，尽管旧的数据仍然存在，在加载或者更新时会使用最新的数据，在后续merge操作中清理无效数据。</p>
+<blockquote>
+<p>在论文中提到使用哈希表来存储，这里可以自由选择，常见可以选择BTree，B+Tree，ART，跳表等。</p>
+<p>例如哈希表，可以更高效的获取数据，但是无法遍历数据，如果想要数据有序遍历，可以选择 B 树、跳表等天然支持排序的数据结构。</p>
+</blockquote>
+<h3 id="数据读写"><a href="#数据读写" class="headerlink" title="数据读写"></a>数据读写</h3><p><img src="/../images/bitcask-4.png" alt="image-20231005102945464"></p>
+<p>在了解完数据文件和内存索引后，数据读取也清晰明了。首先根据key从内存中找到对应的记录，拿到记录实际在磁盘中的位置，根据位置找到磁盘中对应的数据文件，获取到完整的数据返回。</p>
+<p>由于旧的数据实际上一直存在于磁盘文件中，因为我们并没有将旧的数据删掉，而是新追加了一条标识其被删除的记录。因此论文当中提出了merge过程清理无效数据，避免旧的数据过多。merge 会遍历所有不可变的旧数据文件，将所有有效的数据重新写到新的数据文件中，并且将旧的数据文件删除掉。</p>
+<p>此外，由于数据存放在磁盘文件中，每次需要手动加载数据到内存索引中。当数据积累到一定量时，如果发生数据库重启，加载时间过长对业务造成一定的影响，因此论文当中提出，在merge过程中将有效数据写入到一个hint文件中，hint文件类似数据文件，不过它存储的时记录的位置信息。</p>
+<p>当bitcask启动时，直接加载hint文件中的数据，再加载未合并的数据，从而达到快速构建索引目的。</p>
+<h3 id="API接口"><a href="#API接口" class="headerlink" title="API接口"></a>API接口</h3><pre class=" language-shell"><code class="language-shell">// 打开一个 bitcask 数据库实例，使用传入的目录路径
+// 需要保证进程对该目录具有可读可写权限
+bitcask::Open(Directory Name);
+
+// 通过 Key 获取存储的 value
+bitcask::Get(Key);
+
+// 存储 key 和 value
+bitcask::Put(Key, Value);
+
+// 删除一个 key
+bitcask::Delete(Key);
+
+// 获取全部的 key
+bitcask::list_keys();
+
+// 遍历所有的数据，执行函数 Fun
+bitcask::Fold(Fun);
+
+// 执行 merge，清理无效数据
+bitcask::Merge(Directory Name);
+
+// 刷盘，将所有缓冲区的写入持久化到磁盘中
+bitcask::Sync();
+
+// 关闭数据库
+bitcask::Close();
+</code></pre>
+<h2 id="整体回顾"><a href="#整体回顾" class="headerlink" title="整体回顾"></a>整体回顾</h2><p>Bitcask存储引擎是一个KV存储引擎，相比于Redis，通过将实际Value维护在磁盘中，能够处理超过内存容量的数据。</p>
+<p>回顾论文开头，Riak 团队提出的期望：</p>
+<ul>
+<li>首先，bitcask 很快，查询和写入都很快，因为读写都只有一次磁盘 IO</li>
+<li>写入数据还是顺序 IO，保证了高吞吐</li>
+<li>内存中不会存储实际的 value，因此在 value 较大的情况下，能够处理超过内存容量的数据</li>
+<li>提交日志和数据文件实际上就是同一个文件，数据的崩溃恢复能够得到保证</li>
+<li>备份和恢复非常简单，只需要拷贝整个数据目录即可</li>
+<li>设计简洁，数据文件格式易懂、易管理</li>
+</ul>
+<p>总体来说，bitcask 基本满足了设计的要求，是一个简洁优雅、高效的存储引擎。</p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2023/05/03/2-ngnix/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2024-01-14 17:09:30
+            </span>
+            
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2023/06/12/9-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" target="_self">
+                <span>Next</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Bitcask%E6%A8%A1%E5%9E%8B%E8%83%8C%E6%99%AF"><span class="toc-text">Bitcask模型背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E6%A8%A1%E5%9E%8B%E5%AE%9E%E4%BE%8B"><span class="toc-text">存储模型实例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%96%87%E4%BB%B6"><span class="toc-text">数据文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E7%B4%A2%E5%BC%95"><span class="toc-text">内存索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E8%AF%BB%E5%86%99"><span class="toc-text">数据读写</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#API%E6%8E%A5%E5%8F%A3"><span class="toc-text">API接口</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E5%9B%9E%E9%A1%BE"><span class="toc-text">整体回顾</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/shixiaocaia">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/shixiaocaia">Copyright © 2024 shixiaocaia</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="Search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>First search, index file loading, please wait...<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>No result<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The search.xml file was not found, please refer to：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The request failed, Try to refresh the page or try again later.<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+
+      </div>
+    </div>
+  </body>
+</html>

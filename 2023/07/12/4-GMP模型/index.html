@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="shixiaocaia" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      Golang | GMP模型 
+      
+      
+      |
+    
+     shixiaocaia
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.ico">
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="shixiaocaia" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism.css" type="text/css"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.jpg" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">shixiaocaia</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">Golang | GMP模型</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2024-01-14 17:09:30
+        </span>
+        
+      </div>
+      <div class="markdown-body">
+        <blockquote>
+<p>参考资料</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/jIWe3nMP6yiuXeBQgmePDg">小徐先生的编程世界——Golang GMP 原理</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/articles/41728">刘丹冰博客</a></li>
+</ol>
+</blockquote>
+<h2 id="进程、线程、协程"><a href="#进程、线程、协程" class="headerlink" title="进程、线程、协程"></a>进程、线程、协程</h2><h3 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h3><p>进程是运行起来的可执行程序，运行一个程序会创建一个或者多个进程；</p>
+<ul>
+<li>创建进程，需要分配栈区、文件映射区等空间，所以说进程是资源分配的最小单位；</li>
+<li>每个进程有自己的独立地址空间，不与其他进程分享，但是进程间的线程彼此共享同一个虚拟地址空间；</li>
+<li>如果需要实现进程通信方式，需要使用管道、共享内存、信号量、信号等机制。</li>
+</ul>
+<h3 id="线程"><a href="#线程" class="headerlink" title="线程"></a>线程</h3><p>通常语义下，指的是内核级的线程。</p>
+<ul>
+<li><p>是操作系统调度的基本单位；</p>
+</li>
+<li><p>创建、销毁、调度由内核完成，cpu需要在内核态和用户态之间切换；</p>
+</li>
+<li><p>同一个进程下的线程共享内核空间的资源；</p>
+</li>
+<li><p>可充分利用多核、实现并行。</p>
+</li>
+</ul>
+<h3 id="协程"><a href="#协程" class="headerlink" title="协程"></a>协程</h3><p>协程（coroutine）是线程的子集，是用户态线程。</p>
+<ul>
+<li>与线程存在映射关系，将线程资源进一步划分，看成M：1关系；</li>
+<li>创建、销毁、调度由用户态完成，对内核透明；</li>
+<li>从属于同一个内核级线程，无法并行。一个协程阻塞会导致从属同一个线程的所有协程无法执行；<ul>
+<li>发生阻塞时，对于操作系统来说看成是一个线程发生阻塞，无法察觉是一个协程阻塞</li>
+</ul>
+</li>
+</ul>
+<p>协程与线程的区别：</p>
+<ul>
+<li>协程相比线程来说更小，只有2k大小，可以允许更多的协程来实现高并发</li>
+<li>协程的上下文切换不需要经过用户态到内核态的转换，且保存的寄存器值更少，上下文切换成本小，效率高</li>
+<li>通过语言层面的内置协程调度器，利用多个线程实现了协程并行</li>
+</ul>
+<h2 id="Goroutine"><a href="#Goroutine" class="headerlink" title="Goroutine"></a>Goroutine</h2><p>goroutine是从普通的coroutine演变过来的，做了如下优化：</p>
+<ul>
+<li>通过在中间增加了调度器，实现协程与线程存在映射关系，为 M：N；</li>
+<li>通过设置多个调度器利用多个线程，实现协程并行；</li>
+<li>通过调度器的斡旋，实现和线程间的动态绑定和灵活调度；</li>
+<li>栈空间大小可动态扩缩，因地制宜。</li>
+</ul>
+<h2 id="GMP模型"><a href="#GMP模型" class="headerlink" title="GMP模型"></a>GMP模型</h2><p>GMP 是go语言协程调度模型，其由协程 goroutine + 内核线程 machine + 逻辑处理器 processor 构成，通过调度器P将可执行的协程 G 放到对应的工作线程 M 上调度执行。</p>
+<p><img src="/../images/gmp-1.png" alt="f0499e91-cfd4-4626-bce4-f10550651190"></p>
+<h3 id="具体构成"><a href="#具体构成" class="headerlink" title="具体构成"></a>具体构成</h3><ul>
+<li><p>g &#x3D; goroutine，是 golang 对协程的抽象</p>
+<ul>
+<li>g 有自己的运行栈、状态、以及执行的任务函数（用户通过 go func 指定）</li>
+<li>g 需要绑定到 p 才能执行，在 g 的视角中，p 就是它的 cpu</li>
+</ul>
+</li>
+<li><p>p &#x3D; processor，是 golang 中的调度器</p>
+<ul>
+<li>对 g 而言，p 是其 cpu，g 只有被 p 调度，才得以执行</li>
+<li>对 m 而言，p 是其执行代理，为其提供必要信息的同时（可执行的 g、内存分配情况等），并隐藏了繁杂的调度细节</li>
+<li>p 的数量决定了 g 最大并行数量，通过 GOMAXPROCS 进行设定（超过 CPU 核数时无意义），任意时刻都只有 $GOMAXPROCS 个 goroutine 在同时运行</li>
+</ul>
+</li>
+<li><p>m &#x3D;  machine，是 golang 中对线程的抽象</p>
+<ul>
+<li>m 不直接执行 g，而是先和 p 绑定，由其实现代理</li>
+<li>借由 p 的存在，m 无需和 g 绑死，也无需记录 g 的状态信息，因此 g 在全生命周期中可以实现跨 m 执行</li>
+<li>go程序启动时，会设置 M 的最大数量，默认 10000。 但是内核很难支持这么多的线程数，所以这个限制可以忽略</li>
+<li>当一个m发生阻塞，去寻找空闲的 M，如果没有会创建新的 m，去接管之前的P，避免阻塞m中的其他阻塞</li>
+</ul>
+</li>
+<li><p>全局队列：存放等待运行的 G，本地存放不下的G会放到这里</p>
+</li>
+<li><p>P 的本地队列：同全局队列类似，存放的也是等待运行的 G，存的数量有限，不超过 256 个。新建 G’时，G’优先加入到 P 的本地队列，如果队列满了，则会把本地队列中一半的 G 移动到全局队列</p>
+</li>
+<li><p>P 列表：所有的 P 都在程序启动时创建，并保存在数组中，最多有 GOMAXPROCS(可配置) 个</p>
+</li>
+<li><p>g0：是特殊的调度协程，不执行用户函数，负责执行 g 之间的切换调度，每个M有一个对应的g0</p>
+</li>
+</ul>
+<h3 id="实现细节"><a href="#实现细节" class="headerlink" title="实现细节"></a>实现细节</h3><ul>
+<li>M调度G前需要和P绑定，优先取P本地队列，其次取全局队列，最后取wait队列（为io阻塞就绪态goroutine队列）；这样的好处是，优先取本地队列时，可以接近于无锁化，减少全局锁竞争。</li>
+<li>为防止不同P的闲忙差异过大，设立work-stealing机制，本地队列为空的P可以尝试从其他P本地队列偷取一半的G补充到自身队列，实现负载均衡。<ul>
+<li>由于存在窃取情况，所以本地队列中还是需要考虑加锁，但是相比全局队列所有P都可能访问，发生概率很低，接近无锁化情况</li>
+<li>全局队列当中，所有P都可能访问，所以需要加锁避免并发问题</li>
+</ul>
+</li>
+</ul>
+<h3 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h3><p>g的数据结构如下：</p>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">type</span> g <span class="token keyword">struct</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// ...</span>
+    m         <span class="token operator">*</span>m      
+    <span class="token comment" spellcheck="true">// ...</span>
+    sched     gobuf
+    <span class="token comment" spellcheck="true">// ...</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+</code></pre>
+<p>m对应后续绑定的执行线程，可以进行动态调整</p>
+<p><img src="/../images/gmp-2.png" alt="图片"></p>
+<p>整个goroutine生命周期包括如上几个状态：</p>
+<ul>
+<li>当goroutine创建时处于gidle，完成初始化后进入gdead状态</li>
+<li>当g可以执行，等待调度进入grunnable状态</li>
+<li>成功被调度，进入grunning，执行逻辑<ul>
+<li>当代码逻辑涉及内核态操作，会进入gsyscall系统调用的状态，阻塞等待，完成后又进入grunnable可执行等待调度的状态</li>
+<li>有时可能涉及并发未获取到锁，进入gwaiting阻塞等待</li>
+</ul>
+</li>
+<li>g成功调度执行完，进入gdead状态</li>
+</ul>
+<p>m的数据结构如下：</p>
+<pre class=" language-c"><code class="language-c">type m <span class="token keyword">struct</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    g0      <span class="token operator">*</span>g     <span class="token comment" spellcheck="true">// goroutine with scheduling stack</span>
+    <span class="token comment" spellcheck="true">// ...</span>
+    tls           <span class="token punctuation">[</span>tlsSlots<span class="token punctuation">]</span>uintptr <span class="token comment" spellcheck="true">// thread-local storage (for x86 extern register)</span>
+    <span class="token comment" spellcheck="true">// ...</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+</code></pre>
+<ul>
+<li>对于一个m，包含了特殊的调度协程go，不用于执行用户函数，负责执行 g 之间的切换调度， 与 m 的关系为 1:1</li>
+<li>tls：thread-local storage，线程本地存储，存储内容只对当前线程可见。 线程本地存储的是 m.tls 的地址，m.tls[0] 存储的是当前运行的 g，因此线程可以通过 g 找到当前的 m、p、g0 等信息</li>
+</ul>
+<p>p的数据结构如下：</p>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">type</span> p <span class="token keyword">struct</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// ...</span>
+    runqhead <span class="token builtin">uint32</span>
+    runqtail <span class="token builtin">uint32</span>
+    runq     <span class="token punctuation">[</span><span class="token number">256</span><span class="token punctuation">]</span>guintptr
+    
+    runnext guintptr
+    <span class="token comment" spellcheck="true">// ...</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+</code></pre>
+<ul>
+<li>runq对应一个P的本地队列，是一个双向队列</li>
+<li>runqhead：队列头部</li>
+<li>runqtail：队列尾部</li>
+<li>runnext：下一个可执行的 goroutine</li>
+</ul>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">type</span> schedt <span class="token keyword">struct</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// ...</span>
+    lock mutex
+    <span class="token comment" spellcheck="true">// ...</span>
+    runq     gQueue
+    runqsize <span class="token builtin">int32</span>
+    <span class="token comment" spellcheck="true">// ...</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+</code></pre>
+<p>schedt 是全局 goroutine 队列的封装：</p>
+<ul>
+<li><p>lock：一把操作全局队列时使用的锁；</p>
+</li>
+<li><p>runq：全局 goroutine 队列；</p>
+</li>
+<li><p>runqsize：全局 goroutine 队列的容量.</p>
+</li>
+</ul>
+<h2 id="调度流程"><a href="#调度流程" class="headerlink" title="调度流程"></a>调度流程</h2><h3 id="两种goroutine"><a href="#两种goroutine" class="headerlink" title="两种goroutine"></a>两种goroutine</h3><p>goroutine主要分为两类：</p>
+<ul>
+<li>负责调度普通 g 的 g0，执行固定的调度流程，与 m 的关系为一对一</li>
+<li>负责执行用户函数的普通 g</li>
+</ul>
+<p>m 通过 p 调度执行的 goroutine 永远在普通 g 和 g0 之间进行切换，当 g0 找到可执行的 g 时，会调用 gogo 方法，调度 g 执行用户定义的任务；当 g 需要主动让渡或被动调度时，会触发 mcall 方法，将执行权重新交还给 g0。</p>
+<h3 id="调度类型"><a href="#调度类型" class="headerlink" title="调度类型"></a>调度类型</h3><p><img src="/../images/gmp1.png" alt="图片"></p>
+<ul>
+<li>主动调度<ul>
+<li>用户主动使用<code>Gosched</code>让出当前P的执行权，g投递到全局队列当中</li>
+<li>此时g0重新获取到执行权，获取可执行的下一个g</li>
+</ul>
+</li>
+<li>被动调度<ul>
+<li>因当前不满足某种执行条件，g 可能会陷入阻塞态无法被调度，直到关注的条件达成后，g才从阻塞中被唤醒，重新进入可执行队列等待被调度。常见阻塞方式：加锁、有缓存的通道阻塞等待</li>
+<li>当一个 g 需要进入被动调度状态，通过 gopark 陷入 gwaiting 状态，底层通过 mcall 将执行权归还给 g0</li>
+<li>同时当前p和g进行解绑，g0获取下一个可以执行调度g</li>
+<li>当g完成阻塞时，可以被唤醒时，通过某个p的g0调度到，将g尝试加入到主动唤醒操作（goready）的P本地队列当中</li>
+</ul>
+</li>
+<li>正常调度<ul>
+<li>g 中的执行任务已完成，g0 会将当前 g 置为死亡状态，发起新一轮调度</li>
+</ul>
+</li>
+<li>抢占调度<ul>
+<li>前面的操作，主要通过g0在用户态范围进行切换。抢占主要由一个全局监控者g完成，将某个执行系统调用时间过长的g与当前p进行解绑</li>
+<li>某个 g 发起内核切换，由线程身份进入内核态发起系统调用，所以此时 m 由于系统调用陷入僵持态，此时对应 m 的 g0 无法得到执行，所以需要一个全局g来完成操作</li>
+<li>全局 g 会把 P 抽离出去，尝试与其他m进行绑定执行，不影响之前的 m 和 g ，把 P 拿出去继续调度执行</li>
+<li>这里发生抢占调度时机，主要判断当前是否为空闲状态，一般本地队列有需要执行的 g，或者没有空闲的 p 和 m 时，处于忙碌状态需要考虑抢占调度，也要看发生系统调用的时长是否过长</li>
+</ul>
+</li>
+</ul>
+<h3 id="宏观调度"><a href="#宏观调度" class="headerlink" title="宏观调度"></a>宏观调度</h3><p><img src="/../images/gmp2.png" alt="图片"></p>
+<p>gmp一个从g0–&gt;g–&gt;过程，主要包含以下几个步骤：</p>
+<ul>
+<li>g0 执行 schedule() 函数，寻找到用于执行的 g</li>
+<li>g0 执行 execute() 方法，更新当前 g、p 的状态信息，并调用 gogo() 方法，将执行权交给 g</li>
+<li>g 因主动让渡( gosche_m() )、被动调度( park_m() )、正常结束( goexit0() )等原因，调用 m_call 函数，执行权重新回到 g0 手中</li>
+<li>g0 执行 schedule() 函数，开启新一轮循环</li>
+</ul>
+<h3 id="findRunnable"><a href="#findRunnable" class="headerlink" title="findRunnable"></a>findRunnable</h3><p><img src="/../images/gmp3.png" alt="图片"></p>
+<p>寻找可执行g进行调度额过程：</p>
+<ul>
+<li>为了避免一直执行本地队列，导致全局队列g的搁置。p 每执行 61 次调度，会从全局队列中获取一个 goroutine 进行执行。同时这其中涉及一些系统调用，比如gc等，所以实际会在61之前从全局中获取。</li>
+<li>首先尝试从 p 本地队列中获取一个可执行的 goroutine，并且这个过程需要加锁<ul>
+<li>由于存在work-stealing机制，需要加锁保正并发安全。窃取动作不会频繁发生，获取锁的概率很高，接近无锁化操作。</li>
+</ul>
+</li>
+<li>如果本地队列没有可执行的g，从全局队列中获取</li>
+<li>倘若本地队列和全局队列都没有 g，则会获取准备就绪的IO协程</li>
+<li>如果上述还没有，尝试从其他P的本地队列，偷取一半的g<ul>
+<li>一共会发起四次尝试，某一次成功即返回</li>
+<li>偷取过程中会随机遍历P的起点位置，跳跃遍历，保证公平性</li>
+<li>窃取目标P本地队列的一半，移动其头指针更新被偷取的队列信息</li>
+</ul>
+</li>
+</ul>
+<h3 id="execute"><a href="#execute" class="headerlink" title="execute"></a>execute</h3><ul>
+<li><p>更新 g 的状态信息，建立 g 与 m 之间的绑定关系</p>
+</li>
+<li><p>更新 p 的总调度次数</p>
+</li>
+<li><p>调用 gogo 方法，执行 goroutine 中的任务</p>
+</li>
+</ul>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2023/07/12/5-MQ/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2024-01-14 17:09:30
+            </span>
+            
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2023/09/03/1-wsl+golang/" target="_self">
+                <span>Next</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E3%80%81%E7%BA%BF%E7%A8%8B%E3%80%81%E5%8D%8F%E7%A8%8B"><span class="toc-text">进程、线程、协程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B"><span class="toc-text">进程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B"><span class="toc-text">线程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%8F%E7%A8%8B"><span class="toc-text">协程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Goroutine"><span class="toc-text">Goroutine</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GMP%E6%A8%A1%E5%9E%8B"><span class="toc-text">GMP模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E6%9E%84%E6%88%90"><span class="toc-text">具体构成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="toc-text">实现细节</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-text">数据结构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%83%E5%BA%A6%E6%B5%81%E7%A8%8B"><span class="toc-text">调度流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%A4%E7%A7%8Dgoroutine"><span class="toc-text">两种goroutine</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E5%BA%A6%E7%B1%BB%E5%9E%8B"><span class="toc-text">调度类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%8F%E8%A7%82%E8%B0%83%E5%BA%A6"><span class="toc-text">宏观调度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#findRunnable"><span class="toc-text">findRunnable</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#execute"><span class="toc-text">execute</span></a></li></ol></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/shixiaocaia">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/shixiaocaia">Copyright © 2024 shixiaocaia</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="Search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>First search, index file loading, please wait...<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>No result<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The search.xml file was not found, please refer to：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The request failed, Try to refresh the page or try again later.<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+
+      </div>
+    </div>
+  </body>
+</html>

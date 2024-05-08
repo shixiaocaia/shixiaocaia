@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>shixiaocaia</title>
+  
+  
+  <link href="https://shixiaocaia.github.io/atom.xml" rel="self"/>
+  
+  <link href="https://shixiaocaia.github.io/"/>
+  <updated>2024-05-08T13:29:11.540Z</updated>
+  <id>https://shixiaocaia.github.io/</id>
+  
+  <author>
+    <name>shixiaocaia</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>feed流 | 微信朋友圈如何实现的</title>
+    <link href="https://shixiaocaia.github.io/2024/05/08/15-Feed/"/>
+    <id>https://shixiaocaia.github.io/2024/05/08/15-Feed/</id>
+    <published>2024-05-08T13:26:07.000Z</published>
+    <updated>2024-05-08T13:29:11.540Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;什么是Feed流&quot;&gt;&lt;a href=&quot;#什么是Feed流&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="场景" scheme="https://shixiaocaia.github.io/tags/%E5%9C%BA%E6%99%AF/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Docker是什么</title>
+    <link href="https://shixiaocaia.github.io/2023/10/20/13-Docker/"/>
+    <id>https://shixiaocaia.github.io/2023/10/20/13-Docker/</id>
+    <published>2023-10-20T00:48:29.000Z</published>
+    <updated>2024-05-07T08:39:34.761Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.bilibili.com/video/BV14s4y1i7Vf?p=1&amp;vd_source=98edb319e59affabde4d9cb2731826cd&quot;&gt;GeekHour</summary>
+        
+      
+    
+    
+    
+    
+    <category term="是什么" scheme="https://shixiaocaia.github.io/tags/%E6%98%AF%E4%BB%80%E4%B9%88/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Bitcask | 实现细节</title>
+    <link href="https://shixiaocaia.github.io/2023/10/08/8-Bitcask-1/"/>
+    <id>https://shixiaocaia.github.io/2023/10/08/8-Bitcask-1/</id>
+    <published>2023-10-08T13:55:27.000Z</published>
+    <updated>2024-01-14T09:09:30.400Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;数据库启动流程&quot;&gt;&lt;a href=&quot;#数据库启动流程&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="golang" scheme="https://shixiaocaia.github.io/tags/golang/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>分布式场景 | 全局ID生成</title>
+    <link href="https://shixiaocaia.github.io/2023/09/12/6-%E5%88%86%E5%B8%83%E5%BC%8FID/"/>
+    <id>https://shixiaocaia.github.io/2023/09/12/6-%E5%88%86%E5%B8%83%E5%BC%8FID/</id>
+    <published>2023-09-12T08:07:22.000Z</published>
+    <updated>2024-01-14T09:09:30.400Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;参考文章&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://tech.meituan.com/2017/04/21/mt-leaf.html&quot;&gt;Leaf——美团点评分布式ID生成系统&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="分布式" scheme="https://shixiaocaia.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>WSL中配置golang环境</title>
+    <link href="https://shixiaocaia.github.io/2023/09/03/1-wsl+golang/"/>
+    <id>https://shixiaocaia.github.io/2023/09/03/1-wsl+golang/</id>
+    <published>2023-09-03T08:07:22.000Z</published>
+    <updated>2024-01-14T09:09:30.397Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;配置WSL&quot;&gt;&lt;a href=&quot;#配置WSL&quot; class=&quot;headerlink&quot; title=&quot;配置WSL&quot;&gt;&lt;/a&gt;配置WSL&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;参考文章：&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Linux" scheme="https://shixiaocaia.github.io/tags/Linux/"/>
+    
+    <category term="golang" scheme="https://shixiaocaia.github.io/tags/golang/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Golang | GMP模型</title>
+    <link href="https://shixiaocaia.github.io/2023/07/12/4-GMP%E6%A8%A1%E5%9E%8B/"/>
+    <id>https://shixiaocaia.github.io/2023/07/12/4-GMP%E6%A8%A1%E5%9E%8B/</id>
+    <published>2023-07-12T08:07:22.000Z</published>
+    <updated>2024-01-14T09:09:30.399Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;参考资料&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/jIWe3nMP6yiuXeBQgmePDg&quot;&gt;小徐先生的编程世界——Golang GMP 原理&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="golang" scheme="https://shixiaocaia.github.io/tags/golang/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>消息队列</title>
+    <link href="https://shixiaocaia.github.io/2023/07/12/5-MQ/"/>
+    <id>https://shixiaocaia.github.io/2023/07/12/5-MQ/</id>
+    <published>2023-07-12T08:07:22.000Z</published>
+    <updated>2024-01-14T09:09:30.399Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;消息队列&quot;&gt;&lt;a href=&quot;#消息队列&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="MQ" scheme="https://shixiaocaia.github.io/tags/MQ/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Golang | 垃圾回收机制</title>
+    <link href="https://shixiaocaia.github.io/2023/06/13/10-GC/"/>
+    <id>https://shixiaocaia.github.io/2023/06/13/10-GC/</id>
+    <published>2023-06-13T02:44:13.000Z</published>
+    <updated>2024-01-14T09:09:30.397Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;参考文章：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="golang" scheme="https://shixiaocaia.github.io/tags/golang/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Golang | 内存模型与分配机制</title>
+    <link href="https://shixiaocaia.github.io/2023/06/12/9-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/"/>
+    <id>https://shixiaocaia.github.io/2023/06/12/9-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/</id>
+    <published>2023-06-12T12:25:20.000Z</published>
+    <updated>2024-01-14T09:09:30.400Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;参考文章：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://space.bilibili.com/567195437&quot;&gt;幼麟实验室&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="golang" scheme="https://shixiaocaia.github.io/tags/golang/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Bitcask | 论文阅读</title>
+    <link href="https://shixiaocaia.github.io/2023/05/12/3-Bitcask/"/>
+    <id>https://shixiaocaia.github.io/2023/05/12/3-Bitcask/</id>
+    <published>2023-05-12T08:07:22.000Z</published>
+    <updated>2024-01-14T09:09:30.399Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;Bitcask模型背景&quot;&gt;&lt;a href=&quot;#Bitcask模型背景&quot; class=&quot;headerlink&quot; title=&quot;Bitcask模型背景&quot;&gt;&lt;/a&gt;Bitcask模型背景&lt;/h2&gt;&lt;p&gt;bitcask 存储模型最初是由一个做分布式存储系统的商业化公司</summary>
+        
+      
+    
+    
+    
+    
+    <category term="是什么" scheme="https://shixiaocaia.github.io/tags/%E6%98%AF%E4%BB%80%E4%B9%88/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Nginx是什么</title>
+    <link href="https://shixiaocaia.github.io/2023/05/03/2-ngnix/"/>
+    <id>https://shixiaocaia.github.io/2023/05/03/2-ngnix/</id>
+    <published>2023-05-03T08:07:22.000Z</published>
+    <updated>2024-01-26T14:35:04.309Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;正向-反向代理&quot;&gt;&lt;a href=&quot;#正向-反向代理&quot; class=&quot;headerlink&quot; title=&quot;正向 &amp;#x2F; 反向代理&quot;&gt;&lt;/a&gt;正向 &amp;#x2F;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="是什么" scheme="https://shixiaocaia.github.io/tags/%E6%98%AF%E4%BB%80%E4%B9%88/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>操作系统 | IO多路复用</title>
+    <link href="https://shixiaocaia.github.io/2023/04/17/12-IO/"/>
+    <id>https://shixiaocaia.github.io/2023/04/17/12-IO/</id>
+    <published>2023-04-17T00:29:59.000Z</published>
+    <updated>2024-05-07T08:39:31.549Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;最基本的Socket模型&quot;&gt;&lt;a href=&quot;#最基本的Socket模型&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="操作系统" scheme="https://shixiaocaia.github.io/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>操作系统 | 进程间通信</title>
+    <link href="https://shixiaocaia.github.io/2023/04/15/11-%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1/"/>
+    <id>https://shixiaocaia.github.io/2023/04/15/11-%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1/</id>
+    <published>2023-04-15T01:38:01.000Z</published>
+    <updated>2024-05-07T08:39:27.636Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;参考文章：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://xiaolincoding.com/os/4_process/process_commu.html&quot;&gt;小林coding&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="操作系统" scheme="https://shixiaocaia.github.io/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Git基本使用</title>
+    <link href="https://shixiaocaia.github.io/2023/03/29/7-Git/"/>
+    <id>https://shixiaocaia.github.io/2023/03/29/7-Git/</id>
+    <published>2023-03-29T08:07:22.000Z</published>
+    <updated>2024-01-14T09:21:22.759Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;参考文章&quot;&gt;&lt;a href=&quot;#参考文章&quot; class=&quot;headerlink&quot; title=&quot;参考文章&quot;&gt;&lt;/a&gt;参考文章&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="是什么" scheme="https://shixiaocaia.github.io/tags/%E6%98%AF%E4%BB%80%E4%B9%88/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Hello Hexo</title>
+    <link href="https://shixiaocaia.github.io/2023/02/02/0-Hello%20World/"/>
+    <id>https://shixiaocaia.github.io/2023/02/02/0-Hello%20World/</id>
+    <published>2023-02-02T08:59:19.000Z</published>
+    <updated>2024-01-14T09:14:39.791Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;npm安装&quot;&gt;&lt;a href=&quot;#npm安装&quot; class=&quot;headerlink&quot; title=&quot;npm安装&quot;&gt;&lt;/a&gt;npm安装&lt;/h2&gt;&lt;p&gt;前往&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Hello world" scheme="https://shixiaocaia.github.io/tags/Hello-world/"/>
+    
+  </entry>
+  
+</feed>

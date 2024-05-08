@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="shixiaocaia" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      操作系统 | 进程间通信 
+      
+      
+      |
+    
+     shixiaocaia
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.ico">
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="shixiaocaia" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism.css" type="text/css"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.jpg" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">shixiaocaia</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">操作系统 | 进程间通信</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2024-05-07 16:39:27
+        </span>
+        
+      </div>
+      <div class="markdown-body">
+        <blockquote>
+<p>参考文章：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://xiaolincoding.com/os/4_process/process_commu.html">小林coding</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1EW411u7th/">Crash Course Computer Science</a></li>
+</ol>
+</blockquote>
+<h2 id="进程间通信"><a href="#进程间通信" class="headerlink" title="进程间通信"></a>进程间通信</h2><p>每个进程之间的用户地址空间是独立的，一般不能互相访问，但是<strong>内核空间</strong>是每个进程都共享的，所以进程之间要通信必须通过内核。</p>
+<p>进程间通信方式包括：</p>
+<ul>
+<li>管道</li>
+<li>信号量</li>
+<li>条件变量</li>
+</ul>
+<h2 id="管道"><a href="#管道" class="headerlink" title="管道"></a>管道</h2><h3 id="匿名管道"><a href="#匿名管道" class="headerlink" title="匿名管道"></a>匿名管道</h3><pre class=" language-shell"><code class="language-shell">ps auxf | grep mysql
+</code></pre>
+<p>在上述中<code>|</code>就是一个管道，通过管道将前一个输出作为下一条指令的输入，由此可见匿名管道是<strong>单向的</strong>。如果想要相互通信，需要创建两个管道。</p>
+<p>匿名管道是<strong>单向的</strong>（单个管道），<strong>只存在内存中</strong>，相当于<strong>内核中的一串缓存</strong>，读写都是在内核中完成，并且是<strong>无格式的流并且大小受限</strong>。</p>
+<h3 id="命名管道"><a href="#命名管道" class="headerlink" title="命名管道"></a>命名管道</h3><p>与匿名管道对应是命名管道，也被叫做FIFO（是一个先进先出的数据结构），使用前需要通过<code>mkfifo pipiName</code>来创建管道，实际是以<strong>文件</strong>形式存在。</p>
+<p>命名管道是阻塞读写的，写入后必须等待另一个进程读出，才会恢复，因此通信方式效率低，不适合进程间频繁地交换数据。</p>
+<h3 id="跨进程通信"><a href="#跨进程通信" class="headerlink" title="跨进程通信"></a>跨进程通信</h3><p>通常当我们使用匿名管道进行进程间通信，需要创建两个管道，才能完成。</p>
+<p>匿名管道是如何跨进程通信的：</p>
+<ul>
+<li>在一个进程中，通过fork创建子进程，子进程会复制父进程的文件描述符，实现了父进程和子进程分别持有fd[0]和fd[1]，实现跨进程通信。</li>
+<li>同时为了避免同时读写的混论问题，通常关闭一段读端只保留写端，一端只保留读端关闭写端。</li>
+</ul>
+<p>以上是通过两个匿名管道实现进程间通信，在shell中并不是这样的，<code>A | B</code>都是shell创建出的子进程，不存在父子进程关系，但他们的父进程都是shell，实现了进程间通信。</p>
+<p>对于没有实体文件的匿名管道，通信范围局限在父子进程当中，通过fork来复制父进程的文件描述符，实现通信。</p>
+<p>对于命名管道，可以通过文件在不相关的进程间实现通信，不同进程可以打开创建的FIFO文件来访问同一个管道进行通信，结束后需要关闭管道释放相关资源。</p>
+<p>无论是匿名管道还是命名管道，最终数据都是存放在内核当中。</p>
+<h2 id="消息队列"><a href="#消息队列" class="headerlink" title="消息队列"></a>消息队列</h2><p>通过管道的通信效率低（<strong>写入数据会阻塞，直到数据被读取</strong>），不适合频繁交换数据。消息队列可以解决这个问题。</p>
+<p>数据写入时写入到<strong>内核中的消息链表</strong>，并且消息的发送方和接收方要约定好消息体的数据类型，所以每个消息体都是固定大小的存储块，不像管道是无格式的字节流数据。</p>
+<p>当进程从消息队列中读取了消息体，内核会把这个消息体删除。消息队列需要手动释放或者等待操作系统关闭。</p>
+<p>但是消息队列仍有两个不足：</p>
+<ul>
+<li>不适合大数据的传输，因为内核中每个消息体都有最大长度限制，最终导致队列的消息体的总长度也有限制。</li>
+<li>存在用户态与用户态的数据拷贝开销，数据写入到内核中的消息队列和读取，都需要涉及用户态和内核态之间数据的拷贝。</li>
+</ul>
+<h2 id="共享内存"><a href="#共享内存" class="headerlink" title="共享内存"></a>共享内存</h2><p>现代操作系统，通过虚拟内存技术，每个进程都有独立的虚拟内存空间，分别映射到不同的物理空间，不影响相互的使用。</p>
+<p>共享内存通过使用一片虚拟地址空间，映射到相同的物理内存中，不需要发生拷贝问题，提高了进程间通信的速度。</p>
+<h3 id="信号量"><a href="#信号量" class="headerlink" title="信号量"></a>信号量</h3><p>通过共享内存的方式解决了用户态和内核态拷贝问题，但是带来了多个进程读写同一个共享内存的的冲突问题。</p>
+<p>为了防止多进程竞争共享资源，而造成的数据错乱，使用信号量来保护共享的资源任意时刻只被一个进程访问到。</p>
+<p><strong>信号量是一个整型的计数器，主要用于实现进程间的互斥与同步，而不是用于缓存进程间通信的数据</strong>。</p>
+<p>信号量表示<strong>资源的数量</strong>，控制信号量的有两种操作：</p>
+<ul>
+<li>P操作：信号量-1，之后如果信号量 &lt; 0，表示资源已被占用，需要阻塞等待；如果大于等于0，表示资源可以用，进程正常执行。</li>
+<li>V操作：信号量+1，如果信号量仍然小于等于0，说明有阻塞中的进程，于是会唤醒进程执行（前面阻塞等待的）；否则表明当前没有阻塞的进程。</li>
+</ul>
+<p><img src="/../images/signal.png" alt="img"></p>
+<blockquote>
+<p>通过将资源信号量初始值设为1，作为互斥信号量。</p>
+<ol>
+<li>进程A在访问共享内存时，执行P操作，信号量 &#x3D; 0，说明资源可以访问</li>
+<li>另一时刻，进程B也想访问共享内存，执行P操作，信号量 &#x3D; -1，说明资源已被占用，阻塞等待</li>
+<li>A执行完后，执行V操作，信号量 &#x3D; 0，说明有进程阻塞等待访问共享内存，唤醒B执行</li>
+<li>B执行完后，执行V操作，信号量 &#x3D; 1，结束。</li>
+</ol>
+</blockquote>
+<p>此外，通过信号量也可以实现多进程同步方式，典型的例子生产者消费者模型。</p>
+<p><img src="/../images/signal-2.png" alt="img"></p>
+<blockquote>
+<p>设置资信号量初始值为0</p>
+<ul>
+<li>如果进程B先消费，执行P操作，信号量 &#x3D; -1，阻塞等待</li>
+<li>进程A生产数据，执行V操作，信号量 &#x3D; 0，说明有阻塞等待，唤醒B消费</li>
+</ul>
+</blockquote>
+<h2 id="信号"><a href="#信号" class="headerlink" title="信号"></a>信号</h2><p>信号量时常规状态下的工作模式，对于异常模式下需要用<strong>信号</strong>来通知进程。</p>
+<p>Linux提供了几十种信号，用于给进程发送信号。如果进程在后台运行，在知道进程PID号时，可以通过kill命令给进程发送信号。例如<code>kill -9 1050</code>，给PID为1050的进程发送SIGKILL信号，来结束进程。</p>
+<p>信号事件的来源主要有硬件来源（如键盘 Cltr+C ）和软件来源（如 kill 命令）。</p>
+<p>信号是进程间通信机制中<strong>唯一的异步通信机制</strong>，因为可以在任何时候发送信号给某一进程，一旦有信号产生，我们就有下面这几种，用户进程对信号的处理方式。</p>
+<p><strong>1.执行默认操作</strong>。Linux 对每种信号都规定了默认操作，例如，上面列表中的 SIGTERM 信号，就是终止进程的意思。</p>
+<p><strong>2.捕捉信号</strong>。我们可以为信号定义一个信号处理函数。当信号发生时，我们就执行相应的信号处理函数。</p>
+<p><strong>3.忽略信号</strong>。当我们不希望处理某些信号的时候，就可以忽略该信号，不做任何处理。有两个信号是应用进程无法捕捉和忽略的，即 <code>SIGKILL</code> 和 <code>SEGSTOP</code>，它们用于在任何时候中断或结束某一进程。</p>
+<p>信号量和信号量并不是直接用于缓存进程间通信的数据。</p>
+<h2 id="Socket"><a href="#Socket" class="headerlink" title="Socket"></a>Socket</h2><p>前面提到的管道、消息队列、共享内存、信号量和信号都是在同一台主机上进行进程间通信，那要想<strong>跨网络与不同主机上的进程之间通信，就需要 Socket 通信了。</strong></p>
+<p>根据创建 socket 类型的不同，通信的方式也就不同：</p>
+<ul>
+<li>实现 TCP 字节流通信： socket 类型是 AF_INET 和 SOCK_STREAM；<ul>
+<li>需要经过TCP三次握手，结束后需要通过close关闭</li>
+<li>服务端监听一个socket用于接受客户端连接，accept后返回一个用于socket的通信的文件描述符</li>
+</ul>
+</li>
+<li>实现 UDP 数据报通信：socket 类型是 AF_INET 和 SOCK_DGRAM；<ul>
+<li>UDP 是没有连接的，所以不需要三次握手，也就不需要像 TCP 调用 listen 和 connect，但是 UDP 的交互仍然需要 IP 地址和端口号，因此也需要 bind。</li>
+</ul>
+</li>
+<li>实现本地进程间通信<ul>
+<li>通过绑定一个本地文件实现</li>
+</ul>
+</li>
+</ul>
+<h2 id="线程间通信"><a href="#线程间通信" class="headerlink" title="线程间通信"></a>线程间通信</h2><p>同个进程下的线程之间都是共享进程的资源，只要是共享变量都可以做到线程间通信，比如全局变量，所以对于线程间关注的不是通信方式，而是关注多线程竞争共享资源的问题，信号量也同样可以在线程间实现互斥与同步：</p>
+<ul>
+<li>互斥的方式，可保证任意时刻只有一个线程访问共享资源；</li>
+<li>同步的方式，可保证线程 A 应在线程 B 之前执行。</li>
+</ul>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2023/03/29/7-Git/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2024-05-07 16:39:27
+            </span>
+            
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2023/04/17/12-IO/" target="_self">
+                <span>Next</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1"><span class="toc-text">进程间通信</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%A1%E9%81%93"><span class="toc-text">管道</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8C%BF%E5%90%8D%E7%AE%A1%E9%81%93"><span class="toc-text">匿名管道</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E5%90%8D%E7%AE%A1%E9%81%93"><span class="toc-text">命名管道</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%A8%E8%BF%9B%E7%A8%8B%E9%80%9A%E4%BF%A1"><span class="toc-text">跨进程通信</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97"><span class="toc-text">消息队列</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98"><span class="toc-text">共享内存</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%A1%E5%8F%B7%E9%87%8F"><span class="toc-text">信号量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%A1%E5%8F%B7"><span class="toc-text">信号</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Socket"><span class="toc-text">Socket</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1"><span class="toc-text">线程间通信</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/shixiaocaia">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/shixiaocaia">Copyright © 2024 shixiaocaia</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="Search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>First search, index file loading, please wait...<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>No result<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The search.xml file was not found, please refer to：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The request failed, Try to refresh the page or try again later.<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+
+      </div>
+    </div>
+  </body>
+</html>
