@@ -14,7 +14,3 @@
 - [社畜倒计时 | 我在蔚来](https://shixiaocaia.fun/posts/b79f985a/)
 - [Weekly | 新年的迷茫与期望](https://shixiaocaia.fun/posts/bf3129a8/)
 <!-- BLOG-POST-LIST:END -->
-
-### 🍃 最近在写些什么
-<!--START_SECTION:waka-->
-<!--END_SECTION:waka-->
