@@ -8,9 +8,9 @@
 
 ### 📝 最近在说些什么
 <!-- BLOG-POST-LIST:START -->
+- [Monthly | 写在 2024 年的一些话](https://shixiaocaia.fun/posts/b0576fda/)
 - [Monthly | 今年夏天](https://shixiaocaia.fun/posts/fc291701/)
 - [Links](https://shixiaocaia.fun/link/)
 - [Monthly | 追寻本身既是答案](https://shixiaocaia.fun/posts/fc291702/)
 - [社畜倒计时 | 我在蔚来](https://shixiaocaia.fun/posts/b79f985a/)
-- [Weekly | 新年的迷茫与期望](https://shixiaocaia.fun/posts/bf3129a8/)
 <!-- BLOG-POST-LIST:END -->
