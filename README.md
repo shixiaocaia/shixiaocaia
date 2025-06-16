@@ -9,7 +9,7 @@
 ### 📝 最近在说些什么
 <!-- BLOG-POST-LIST:START -->
 - [Monthly | 走出山之前的时刻](https://shixiaocaia.fun/posts/ef594bd9/)
-- [Year | 会美式的](https://shixiaocaia.fun/posts/8bfc4349/)
+- [Yearly | 会美式的](https://shixiaocaia.fun/posts/8bfc4349/)
 - [Monthly | 写在 2024 年的一些话](https://shixiaocaia.fun/posts/b0576fda/)
 - [Monthly | 今年夏天](https://shixiaocaia.fun/posts/fc291701/)
 - [Links](https://shixiaocaia.fun/link/)
